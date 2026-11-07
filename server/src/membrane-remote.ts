@@ -1,5 +1,5 @@
-// Real remote Membrane adapter: exact scoped shares on the attested hivemind container.
-// Server side: wakesync/hivemind branch feat/exact-share-revoke, app/shares.py
+// Real remote Membrane adapter: exact scoped shares on the attested Membrane container.
+// Server side: membrane/app/shares.py in this repo.
 //   POST /shares {context,text,readers}  GET /shares/{id}  DELETE /shares/{id}
 // Transport: tinfoil SecureClient (attestation verified against configRepo, EHBP).
 // Identity: per-user HMAC(SWARM_SECRET, user.ts), the container's existing scheme. The app holds
@@ -13,7 +13,7 @@ export class MembraneError extends Error { constructor(){super('Membrane unavail
 type Fetcher = (url:string, init:RequestInit)=>Promise<Response>;
 export interface RemoteMembraneOptions {
   origin:string;            // e.g. https://<your-membrane>.containers.tinfoil.dev
-  configRepo:string;        // e.g. wakesync/hivemind
+  configRepo:string;        // public Tinfoil config repo, e.g. <org>/<membrane-config>
   secret:string;            // SWARM_SECRET of that container
   namespace:string;         // prefixes user ids, e.g. 'cst' -> cst:fx_ada
   timeoutMs?:number;
@@ -64,5 +64,5 @@ export function createRemoteMembrane(o:RemoteMembraneOptions):Membrane {
 
 export function remoteMembraneFromEnv(env:Record<string,string|undefined>=process.env):Membrane|undefined{
   if(!env.MEMBRANE_ORIGIN||!env.MEMBRANE_SWARM_SECRET)return undefined;
-  return createRemoteMembrane({origin:env.MEMBRANE_ORIGIN,configRepo:env.MEMBRANE_CONFIG_REPO??'wakesync/hivemind',secret:env.MEMBRANE_SWARM_SECRET,namespace:env.MEMBRANE_NAMESPACE??'cst'});
+  return createRemoteMembrane({origin:env.MEMBRANE_ORIGIN,configRepo:env.MEMBRANE_CONFIG_REPO??'wakesync/constellate',secret:env.MEMBRANE_SWARM_SECRET,namespace:env.MEMBRANE_NAMESPACE??'cst'});
 }

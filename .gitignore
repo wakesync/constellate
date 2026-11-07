@@ -17,3 +17,5 @@ data/
 *.tsbuildinfo
 artifacts/
 ops/receipts/
+.pytest_cache/
+*.pyc

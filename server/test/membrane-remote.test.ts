@@ -20,7 +20,7 @@ function fakeServer(){
   };
   return {fetcher,shares,log};
 }
-const mk=(f:any)=>createRemoteMembrane({origin:'https://membrane.example',configRepo:'wakesync/hivemind',secret:SECRET,namespace:'cst',fetcher:f});
+const mk=(f:any)=>createRemoteMembrane({origin:'https://membrane.example',configRepo:'example/membrane-config',secret:SECRET,namespace:'cst',fetcher:f});
 
 test('remote membrane share/read/revoke against server contract',async()=>{
   const s=fakeServer();const m=mk(s.fetcher);

@@ -1,0 +1,41 @@
+{
+  "opening": "cast under the sidereal fixed-star sky, lahiri reckoning, this grid reads like a house with the lights on in every room. ada and bram do not share a roof quietly. the sky remembers a home that hums.",
+  "sections": [
+    {
+      "title": "the recognition",
+      "body": "their moons trine each other across fire and earth, ada's leo moon and bram's capricorn moon settling into an easy mutual read, the kind where nobody has to explain a bad day. ada's sun sits opposite bram's venus and pluto, so there is a facing-off quality from the start, two people who register each other fully rather than drifting past in the hallway. ada's sun also trines bram's uranus within a degree, which keeps the whole arrangement feeling slightly unconventional and better for it."
+    },
+    {
+      "title": "how you talk",
+      "body": "ada's taurus mercury sits directly opposite bram's pluto, tight at a degree and a half, so conversations in this house do not stay shallow. a question about groceries can turn into a question about motives, and bram tends to hear the thing ada did not quite say. ada's mercury also opposes bram's scorpio venus, which means their tastes get debated rather than assumed, and ada's mars trine bram's mercury gives the talk momentum, quick back and forth that mostly lands well. the trap is when the probing turns to digging, someone has to know when to let a sentence stay a sentence."
+    },
+    {
+      "title": "sharing a roof",
+      "body": "the warmest line in the grid is ada's venus trine bram's moon, a genuine domestic ease, ada's sense of comfort and care landing right where bram actually lives. ada's jupiter sits conjunct bram's venus within a degree, so ada tends to enlarge what bram enjoys, more food, more of the good thing, a household that feels generous. the grind is in mars, ada's mars opposite bram's mars and square bram's venus, two very different paces under one roof, ada moving in leo bursts of visible effort while bram runs a cooler aquarius rhythm, and bram's preferences catching friction from how ada charges through a room."
+    },
+    {
+      "title": "the machinery",
+      "body": "the bodygraphs between them are unusually busy, seven electromagnetic channels that exist only when both are home, including the beat, awareness, and power, which reads as a household that generates activity neither produces alone, projects starting, conversations sparking, things getting done. together they define three centers neither has solo, head, ajna, and spleen, so certain kinds of clarity and gut timing only show up when both are in the house. bram's definition fills ada's open g, sacral, and root, meaning ada feels more directed and energized with bram around, while ada defines bram's open solar plexus, so ada's emotional weather becomes the weather of the whole house for bram. that last one deserves care, bram will feel ada's moods amplified and may need to leave the room to know which feelings are actually theirs."
+    },
+    {
+      "title": "the friction",
+      "body": "the mars opposition is the daily one, chore pace, noise, when to clean, when to rest, ada and bram simply do not move at the same speed and each can read the other's rhythm as wrong rather than different. bram carries the full 3-60 mutation channel against ada's single gate, a compromise dynamic where bram's way of handling change and household pressure tends to override ada's, and bram also transmits the prodigal and maturation channels whole, so bram's version of how things develop quietly sets the terms. add ada's mercury opposite bram's pluto and disagreements can escalate from logistics to power, who decides, who concedes. none of this is fatal, but it will not dissolve on its own, it needs naming out loud."
+    },
+    {
+      "title": "what holds",
+      "body": "ada's mars trines bram's saturn, which is quietly the most useful line here, ada's energy meeting bram's structure without collision, the aspect of chores actually getting divided and staying divided. the jupiter to venus conjunction keeps goodwill in the house, and ada's saturn sextile bram's moon adds a steady, reliable floor under bram's inner life. this is a home that can last if the mars line gets negotiated early, because everything underneath it is sturdy."
+    }
+  ],
+  "verdict": "this is a genuinely alive shared household, more spark and more mutual definition than most pairs of housemates ever get, with real ease at the moon and venus level. the cost is a pace clash and a quiet pattern of bram's rhythms overriding ada's, plus ada's moods filling bram's rooms. the question you two have to answer is simple and daily, can you let each other move at different speeds without reading it as a verdict on the other.",
+  "highlights": [
+    {
+      "aspect": "ada's Venus trine bram's Moon",
+      "meaning": "ada's way of making a space comfortable lands exactly where bram feels at home"
+    },
+    {
+      "aspect": "ada's Mars opposition bram's Mars",
+      "meaning": "two different speeds under one roof, chores and rest hours will need actual negotiation"
+    },
+    {
+      "aspect": "ada's Mercury opposition bram's Pluto",
+      "meaning": "small talk keeps

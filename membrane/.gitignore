@@ -1,0 +1,7 @@
+*.db
+demo/out/
+.env
+*.key
+__pycache__/
+tinfoil/*.log
+.local/

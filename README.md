@@ -72,6 +72,12 @@ server          Node + Express backend for circles, readings and chat
                 src/limits.ts       per-user and provider daily caps
                 ops/origin.ts       production entry behind a secret-gated proxy
                 ops/pages-worker.js Pages worker that forwards /api to the server
+                public/             minimal vanilla UI served by the server itself
+membrane       Python (FastAPI) confidential swarm memory, deployed as a Tinfoil Container
+                app/shares.py       exact share / read / revoke
+                app/router.py       sensitivity router (private | frontier slice | signer)
+                clients/            CLI, OpenAI tools, MCP adapters for any agent harness
+                tinfoil/            public tinfoil-config.yml (measured, attested)
 ```
 
 The default web entry (`apps/web/src/main.tsx`) loads `PreviewApp`, which calls `/api/*` on the same origin. In production, a Cloudflare Pages worker forwards `/api` to the server with an origin secret. Locally, Vite proxies `/api` to the server.
