@@ -7,12 +7,13 @@ import {pathToFileURL} from 'node:url';
 import {openDatabase,migrateProduct} from './db.js';
 import {createAuth} from './auth.js';
 import {mountCircles,type Membrane} from './circles.js';
+import {createSqliteCircleGraph,type CircleGraph} from './circle-graph.js';
 import type {Conversation} from './conversation.js';
 import {birthSchema,type Profile,type Reading,type Chart,type InferenceResult} from './contracts.js';
 import {calculateChart} from './chart.js';
 import {generateReading,providerConfigured} from './inference.js';
 import {createReadingLimiter,readingLimitsFromEnv,ReadingLimitError,type ReadingLimits} from './limits.js';
-export async function createApp(options:{dbPath:string;baseURL:string;secret:string;trustedLoopbackProxy?:boolean;trustedClientIpHeader?:boolean;limits?:ReadingLimits;now?:()=>number;converse?:Conversation;membrane?:Membrane;infer?:(chart:Chart)=>Promise<InferenceResult>}){
+export async function createApp(options:{dbPath:string;baseURL:string;secret:string;trustedLoopbackProxy?:boolean;trustedClientIpHeader?:boolean;limits?:ReadingLimits;now?:()=>number;converse?:Conversation;membrane?:Membrane;graph?:CircleGraph|false;infer?:(chart:Chart)=>Promise<InferenceResult>}){
  const db=openDatabase(options.dbPath);const auth=await createAuth(db,options.baseURL,options.secret);migrateProduct(db);
  const limiter=createReadingLimiter(db,options.limits??readingLimitsFromEnv(),options.now);
  const app=express();app.disable('x-powered-by');
@@ -52,7 +53,7 @@ export async function createApp(options:{dbPath:string;baseURL:string;secret:str
  }catch{res.status(503).json({error:'Private inference is unavailable. No reading was saved. This attempt counts toward the daily limit. Please try again later.'});}finally{limiter.release(uid,token);}});
  app.get('/api/readings/:id',(req,res)=>{const row=db.prepare('SELECT data FROM reading WHERE id=? AND userId=?').get(req.params.id,res.locals.user.id) as {data:string}|undefined;if(!row){res.status(404).json({error:'Reading not found'});return;}res.json({reading:JSON.parse(row.data)});});
  app.delete('/api/readings/:id',(req,res)=>{const r=db.prepare('DELETE FROM reading WHERE id=? AND userId=?').run(req.params.id,res.locals.user.id);res.status(r.changes?204:404).end();});
- const circles=mountCircles(app,db,limiter,{converse:options.converse,membrane:options.membrane});
+ const circles=mountCircles(app,db,limiter,{converse:options.converse,membrane:options.membrane,graph:options.graph===false?undefined:(options.graph??createSqliteCircleGraph(db))});
  const clear=db.transaction((uid:string)=>{db.prepare('DELETE FROM reading WHERE userId=?').run(uid);db.prepare('DELETE FROM profile WHERE userId=?').run(uid);});
  app.delete('/api/profile',async(_req,res)=>{try{await circles.revokeUser(res.locals.user.id);}catch{res.status(503).json({error:'Access blocked locally. Remote share revocation must succeed before deletion; please retry.'});return;}clear(res.locals.user.id);res.status(204).end();});
  app.delete('/api/account',async(_req,res)=>{if((options.now??Date.now)()-new Date(res.locals.session.createdAt).getTime()>5*60_000){res.status(403).json({error:'For account deletion, please sign out and sign in again, then retry within five minutes.'});return;}try{await circles.revokeUser(res.locals.user.id);}catch{res.status(503).json({error:'Access blocked locally. Remote share revocation must succeed before deletion; please retry.'});return;}db.transaction(()=>{const uid=res.locals.user.id;clear(uid);limiter.eraseUser(uid);db.prepare('DELETE FROM session WHERE userId=?').run(uid);db.prepare('DELETE FROM account WHERE userId=?').run(uid);db.prepare('DELETE FROM user WHERE id=?').run(uid);})();res.status(204).end();});

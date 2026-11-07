@@ -1,0 +1,52 @@
+# Drop-in vLLM block for the distilled astrologer on the H200 enclave.
+#
+# Merge the `models:` entry and the `astro-student` container into the Tinfoil
+# config that already runs on the H200 (membrane/tinfoil/tinfoil-config.yml, or
+# a dedicated inference config). It joins the closed `swarm` network, so the
+# app-facing container reaches it at http://astro-student:8002/v1 and it is
+# never exposed through the shim. Weights are measured into the attestation.
+#
+# Fill in after training (distill/train_lora.py --merge, push to a HF repo):
+#   tinfoil model wrap <hf-owner>/constellate-astro-1.5b --host <gpu-host> --wait
+# and paste the generated repo@commit + mpk below. Until then this block is
+# NOT deployable (placeholders are intentionally invalid).
+#
+# Budget: 1.5B bf16 is ~3.1GB of weights. gpu-memory-utilization 0.12 (~17GB of
+# the H200's 141GB) leaves the co-resident 27B model its 0.75+ share. Lower the
+# 27B container's --gpu-memory-utilization from 0.90 to 0.78 when both run.
+
+models:
+  - name: "constellate-astro-1.5b"
+    repo: "__HF_OWNER__/constellate-astro-1.5b@__COMMIT__"
+    mpk: "__MPK_FROM_TINFOIL_MODEL_WRAP__"
+
+containers:
+  - name: "astro-student"
+    image: "vllm/vllm-openai@sha256:__PIN_SAME_DIGEST_AS_EXISTING_VLLM__"
+    runtime: nvidia
+    gpus: all
+    networks: [swarm]
+    restart: always
+    command: [
+      "--model", "/tinfoil/mpk/mpk-__MPK_ROOTHASH__",
+      "--served-model-name", "constellate-astro-1.5b",
+      "--port", "8002",
+      "--max-model-len", "8192",
+      "--max-num-seqs", "64",
+      "--gpu-memory-utilization", "0.12",
+      "--dtype", "bfloat16",
+      "--generation-config", "auto"
+    ]
+    tmpfs:
+      /tmp: "size=1g,mode=1777,exec"
+      /root: "size=4g,mode=0700,exec"
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 5s
+      start_period: 10m
+
+# Optional: serve the LoRA adapter instead of merged weights (one base, many
+# adapters). Replace --model with the base mpk and add:
+#   "--enable-lora", "--max-lora-rank", "16",
+#   "--lora-modules", "constellate-astro=/tinfoil/mpk/mpk-__ADAPTER_ROOTHASH__"
