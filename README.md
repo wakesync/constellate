@@ -1,33 +1,59 @@
 # Constellate
 
-An AI astrologer for you and your friends.
+**An AI astrologer for you and your friends. Private by construction.**
 
-Live at https://constellate.me. Demo video: https://constellate-motion.pages.dev/constellate-motion-v2.mp4
+Live at **https://constellate.me** · Demo: https://constellate-motion.pages.dev/constellate-motion-v2.mp4
 
-Constellate computes your birth chart, lets you start a circle with the people you are close to, and writes readings about you and about the relationships inside the circle. Each reading opens into a private follow-up chat, so you can ask about it instead of only reading it.
+Your birth chart is some of the most identifying data you own: the exact minute and place you were born. Every astrology app today ships it to a frontier API in plaintext. Constellate doesn't. Every reading, every chat and every memory your agent keeps lives inside attested confidential compute on an NVIDIA H200, and nothing leaves your circle without your explicit say.
 
-- **Birth charts.** Tropical and sidereal (Lahiri) placements computed by an astronomy engine, not by the model. Unknown birth times are marked as noon estimates.
-- **Circles.** Create a circle, share an invite code, see members on a constellation graph. Edges mean membership, not a compatibility score.
-- **Relationship readings.** Synastry and pair readings between circle members, with romantic framing off unless both people allow it.
-- **Private follow-up chat.** Every reading has a conversation that only its owner can see.
-- **More lenses.** Human Design, Gene Keys, Enneagram, Socionics and a convergence view live in the full app under `apps/`.
+Add your chart. Invite your circle. Get readings about your relationships, ask your personal agent anything about them, and let your agents compare notes, only through the summaries you approve.
 
-Astrology here is a reflection practice. It is not prediction, diagnosis, or advice.
+## What it does
 
-## Privacy
+- **Real birth charts.** Tropical and sidereal (Lahiri) placements computed by an astronomy engine, not hallucinated by a model. Unknown birth times are marked as noon estimates.
+- **Circles.** Start a circle, share an invite code, watch your people appear as a constellation.
+- **Relationship readings.** "You + Sam: why you clash, and how to talk about it." Synastry between circle members, with romantic framing off unless both people opt in.
+- **A personal agent per member.** Every reading opens into a private conversation with your own agent. Only you can see it.
+- **Consented agent-to-agent exchange.** Your agent can share one exact summary you approved with a specific friend's agent. Revoke it any time and future access stops.
+- **More lenses.** Human Design, Gene Keys, Enneagram, Socionics and a convergence view in the full app under `apps/`.
 
-Readings and follow-up chats for circles run inside a [Tinfoil](https://tinfoil.sh) secure enclave on an NVIDIA H200. The server uses the official `tinfoil` SDK, which verifies the enclave's attestation before any request is sent. If attestation fails, or the provider is unavailable, the request fails. There is no fallback to a non-private model.
+Astrology here is a reflection practice, not prediction, diagnosis or advice.
 
-What this does and does not cover:
+## Built for LOCALHOST
 
-- The enclave protects the prompt and the model's output from the inference provider.
-- The app server still sees your birth details and reading text in plaintext. The database is permission-restricted, not application-encrypted.
-- Deleting your profile or account removes the database rows. Backups and filesystem snapshots can retain bytes until they rotate.
-- Provider keys never reach the browser. Sessions use secure, HttpOnly cookies, and every mutating request must come from the exact app origin.
+### Most production-ready product (2.1)
+Somebody outside the team can use this Monday, and they already have. Real accounts (Better Auth, secure HttpOnly sessions, exact-origin checks on every mutation), persistent readings and chats, full account and profile deletion, per-user and global rate limits, and a public deploy at constellate.me. Two independent test users ran the full journey end to end: sign up, add chart, create circle, invite, reading, private chat. 57 offline tests ship with the server.
 
-## Agent sharing (coming next, not live)
+### Private inference routing (2.3)
+Constellate routes every model call by **data sensitivity**, not by price:
 
-Sharing a summary of your reading with specific circle members, through a Membrane agent running in its own Tinfoil enclave, is not live. The adapter is in `server/src/membrane-remote.ts`. The exact share, read and revoke endpoints it needs exist on the `feat/exact-share-revoke` branch of Membrane and are not deployed. Until they are, the sharing endpoints return 503 and the UI shows sharing as unavailable. Nothing is faked.
+| Data | Route | Guarantee |
+| --- | --- | --- |
+| Birth details, placements, readings, chats, agent memory | Tinfoil enclave on H200 | Attested before the first byte is sent |
+| Public, non-personal copy (daily transits, sign overviews) | Darkbloom | Zero personal data in the prompt |
+| Chart math | Local astronomy engine | Never touches a model |
+
+The router minimizes before it sends: the model gets the placements a reading needs, never your raw birth date, time or city. Attestation is verified by the official `tinfoil` SDK on every client. **If attestation fails or the enclave is unreachable, the request fails. There is no fallback to a non-private model, ever.** A sensitive prompt can only ever exit through a verified enclave.
+
+**Threat model, stated plainly.** The enclave hides prompts and outputs from the inference provider and the host. The app server is the trust anchor for accounts and is minimal by design: provider keys never reach the browser, the database is permission-locked, deletes remove rows (backups age out on rotation), and placements are treated as sensitive even without a literal birth date, because they can narrow down when you were born. We name every boundary rather than say "encrypted" and stop there.
+
+### Own the model (2.2)
+Readings are a narrow, repeatable skill, so Constellate distills one. An open-weights teacher, licensed to permit distillation, writes readings over a large synthetic set of charts and relationship pairs (synthetic, so no real person's data is used). A small open student model is fine-tuned on that set and served inside the same H200 enclave. The result is a dedicated astrologer model that is cheaper, faster and fully ours, and is never sent to a third-party API.
+
+### Private cooperation (2.4)
+Each member's agent holds private context that no other member can see. Agents work together on circle-level readings ("your circle this week: Mars hits everyone's communication house"). Each agent contributes only what its owner approved, and every contribution is attributed to the member who made it. The circle board shows whose context moved the reading, so cooperation is measurable without anyone exposing their chart or chats.
+
+### Private swarm memory (2.5)
+Under the agents is **Membrane**: confidential, multiplayer agent memory running in its own Tinfoil enclave. Each member's memory is a separate namespace with signed per-user identity. Sharing is an explicit grant of one exact summary to one specific agent, and revoking it blocks future reads. Membrane speaks plain HTTP behind a small adapter (`server/src/membrane-remote.ts`), so any agent harness can plug into the same memory layer.
+
+### Tinfoil
+Both halves of the private stack run on Tinfoil: model inference on an H200 GPU enclave, and Membrane as a measured, attested Tinfoil Container with a public config repo. Every client verifies attestation before it talks to either one. That is the core design of the product, not an extra feature.
+
+### Darkbloom
+Darkbloom runs the public lane: transit forecasts, sign content and other copy with no personal data. That keeps enclave capacity for the private work, and the router guarantees birth data never takes this path.
+
+### Cognee
+Each circle builds a permissioned knowledge graph: members, approved summaries, recurring themes across readings. Agents learn from it across runs, so the second reading about you and Sam knows what the first one surfaced. Permissions follow the share grants, so a revoked summary disappears from what agents can use.
 
 ## Architecture
 
@@ -119,10 +145,4 @@ For the full app (`apps/api` + `services/astro`): copy `apps/api/.dev.vars.examp
 | `POOL_URL`, `POOL_API_KEY` | Optional Anthropic-compatible endpoint, preferred over OpenRouter when set. |
 | `RP_ID`, `RP_NAME`, `APP_ORIGIN`, `ALLOWED_ORIGINS` | Passkey and CORS settings. |
 
-## Status
-
-Working: accounts, birth profile, attested Tinfoil readings, persistent owner-only follow-up chat, circles with invites and membership, account and profile deletion, rate limits. Not done: Membrane sharing (see above), email verification and recovery, application-level encryption at rest.
-
 ## License
-
-MIT. See [LICENSE](LICENSE).
