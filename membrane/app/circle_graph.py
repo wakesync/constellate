@@ -41,7 +41,7 @@ from app.main import _lock, app, conn, scope_from_headers
 
 CTX = r"^[A-Za-z0-9_.:@-]{1,96}$"
 USER = r"^[A-Za-z0-9_.:@-]{1,64}$"
-NS = uuid.UUID("6b1d6f8e-3c2a-5e7f-9a10-c0ffee0c1c1e")
+NS = uuid.uuid5(uuid.NAMESPACE_URL, "constellate:circle-graph")
 
 # Same closed vocabulary as server/src/circle-graph.ts THEMES.
 THEMES = {
