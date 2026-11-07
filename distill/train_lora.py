@@ -10,7 +10,7 @@ under an hour). Requirements: distill/requirements-train.txt.
 Usage:
   python distill/train_lora.py --data distill/data/teacher.jsonl --out runs/astro-1.5b \
       [--student Qwen/Qwen2.5-1.5B-Instruct] [--epochs 2] [--lr 2e-4] [--rank 16] [--merge]
-  python distill/train_lora.py --data distill/data/teacher.sample.jsonl --dry-run   # tokenize + count only, CPU ok
+  python distill/train_lora.py --data distill/samples/teacher.sample.jsonl --dry-run   # tokenize + count only, CPU ok
 """
 from __future__ import annotations
 

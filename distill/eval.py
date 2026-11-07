@@ -13,7 +13,7 @@ Teacher outputs already in --teacher-cache (teacher.py output) are reused instea
 
 Usage:
   python3 distill/eval.py --in distill/data/inputs.jsonl --teacher-cache distill/data/teacher.jsonl --out runs/eval.json [--limit 50]
-  python3 distill/eval.py --score-only distill/data/teacher.sample.jsonl   # metrics for an existing JSONL, no model calls
+  python3 distill/eval.py --score-only distill/samples/teacher.sample.jsonl   # metrics for an existing JSONL, no model calls
 """
 from __future__ import annotations
 

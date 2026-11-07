@@ -13,7 +13,7 @@ from prompts import NATAL_SYSTEM, messages_for  # noqa: E402
 from quality import check, grounding  # noqa: E402
 from teacher import license_ok  # noqa: E402
 
-SAMPLES = [HERE / "data" / "inputs.sample.jsonl", HERE / "data" / "inputs.swe.sample.jsonl"]
+SAMPLES = [HERE / "samples" / "inputs.sample.jsonl", HERE / "samples" / "inputs.swe.sample.jsonl"]
 # "longitude" in placements is ECLIPTIC longitude (a chart fact), not a birthplace.
 BIRTH_KEYS = {"date", "time", "timeZone", "tz", "lat", "lng", "latitude", "calculatedAt", "birth"}
 
@@ -67,7 +67,7 @@ class Distill(unittest.TestCase):
         self.assertFalse(license_ok("some-frontier-api-model"))
 
     def test_teacher_sample_is_well_formed(self):
-        p = HERE / "data" / "teacher.sample.jsonl"
+        p = HERE / "samples" / "teacher.sample.jsonl"
         if not p.exists():
             self.skipTest("no teacher sample")
         recs = rows(p)
