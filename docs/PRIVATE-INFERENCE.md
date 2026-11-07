@@ -17,3 +17,11 @@ The app server still sees birth details and plaintext readings. SQLite stores th
 Offline tests exercise minimization, missing config, rejected attestation, SDK errors, timeout including late initialization, malformed placements and bounded/empty/truncated output. They do not demonstrate a live provider response. Live inference remains a release gate until an inference API key and supported model are supplied and an actual attested response is observed.
 
 SDK references: https://docs.tinfoil.sh/sdk/javascript-sdk and the installed 1.2.2 declaration/source files (`tinfoil-ai`, `secure-client`). The upstream main-branch README now describes a different 2.x factory API; implementation intentionally follows the installed 1.x API rather than mixing versions.
+
+## Sensitivity router and the public lane
+
+`server/src/router.ts` classifies every model call. Readings, reading chat, synastry, agent memory and agent exchange are `private` and only reach `createAttestedChat` above. Unknown kinds are private. Today's sky and sign overviews are `public` and go to Darkbloom (`server/src/darkbloom.ts`, `https://api.darkbloom.dev/v1/chat/completions`, `DARKBLOOM_API_KEY` + `DARKBLOOM_MODEL`). Chart math is `local`.
+
+The attested seam tags every request it is offered, before validation, so the same object is refused by the public lane even if the enclave rejected it. The public lane only accepts prompts built by `publicPrompt()`, re-scans the exact serialized messages before `fetch`, and refuses dates, years, clock times, IANA zones, UTC offsets, coordinates, emails, birth words, chart field names and any capitalized word outside a fixed astrology vocabulary (which is how a city or a name is caught). Public failures degrade to a deterministic template typed `source: 'template'`; private failures never degrade, they throw `PrivateInferenceError`. `assertMinimizedChart` checks that a reading payload is exactly `{placements:[{body,longitude,sign,degree}], timeKnown}`.
+
+Darkbloom's own privacy statement: hop-by-hop encryption, the coordinator decrypts in confidential-VM memory for routing, and the provider Mac is the plaintext endpoint. That is why only zero-personal-data copy is allowed on it.

@@ -11,8 +11,10 @@ import type {Conversation} from './conversation.js';
 import {birthSchema,type Profile,type Reading,type Chart,type InferenceResult} from './contracts.js';
 import {calculateChart} from './chart.js';
 import {generateReading,providerConfigured} from './inference.js';
+import {createPublicLane,publicLaneConfigured,type PublicLane} from './darkbloom.js';
+import {createTransitService} from './transits.js';
 import {createReadingLimiter,readingLimitsFromEnv,ReadingLimitError,type ReadingLimits} from './limits.js';
-export async function createApp(options:{dbPath:string;baseURL:string;secret:string;trustedLoopbackProxy?:boolean;trustedClientIpHeader?:boolean;limits?:ReadingLimits;now?:()=>number;converse?:Conversation;membrane?:Membrane;infer?:(chart:Chart)=>Promise<InferenceResult>}){
+export async function createApp(options:{dbPath:string;baseURL:string;secret:string;trustedLoopbackProxy?:boolean;trustedClientIpHeader?:boolean;limits?:ReadingLimits;now?:()=>number;converse?:Conversation;membrane?:Membrane;infer?:(chart:Chart)=>Promise<InferenceResult>;publicLane?:PublicLane}){
  const db=openDatabase(options.dbPath);const auth=await createAuth(db,options.baseURL,options.secret);migrateProduct(db);
  const limiter=createReadingLimiter(db,options.limits??readingLimitsFromEnv(),options.now);
  const app=express();app.disable('x-powered-by');
@@ -31,7 +33,11 @@ export async function createApp(options:{dbPath:string;baseURL:string;secret:str
  app.use('/api',(req,res,next)=>{if(!['GET','HEAD','OPTIONS'].includes(req.method)&&req.headers.origin!==options.baseURL){res.status(403).json({error:'Request origin rejected'});return;}next();});
  app.all('/api/auth/*splat',toNodeHandler(auth));
  app.use(express.json({limit:'12kb'}));
- app.get('/api/health',(_req,res)=>res.json({ok:true,privateInferenceConfigured:providerConfigured()}));
+ app.get('/api/health',(_req,res)=>res.json({ok:true,privateInferenceConfigured:providerConfigured(),publicLaneConfigured:(options.publicLane?.configured()??publicLaneConfigured())}));
+ // Public lane (router: daily-transits -> Darkbloom). No session, no user data in or out.
+ // Same copy for every visitor, cached per UTC day, keyless template when unconfigured.
+ const transits=createTransitService(options.publicLane??createPublicLane(),options.now);
+ app.get('/api/transits/today',async(_req,res)=>{try{const t=await transits.today();res.set('Cache-Control','public, max-age=900');res.json({transits:t});}catch{res.status(503).json({error:'Today\'s sky is unavailable'});}});
  app.use('/api',async(req,res,next)=>{const session=await auth.api.getSession({headers:fromNodeHeaders(req.headers)});if(!session){res.status(401).json({error:'Please sign in'});return;}res.locals.user=session.user;res.locals.session=session.session;next();});
  const profile=(uid:string):Profile|null=>{const row=db.prepare('SELECT data FROM profile WHERE userId=?').get(uid) as {data:string}|undefined;return row?JSON.parse(row.data):null;};
  app.get('/api/me',(_req,res)=>res.json({user:res.locals.user,profile:profile(res.locals.user.id),provider:{configured:providerConfigured()}}));

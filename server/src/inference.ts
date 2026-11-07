@@ -1,5 +1,6 @@
 import { TinfoilAI } from 'tinfoil';
 import type { Chart, InferenceResult } from './contracts.js';
+import { assertMinimizedChart, tagPrivate } from './router.js';
 
 // Generic attested-chat seam. Framework-agnostic (Express, Hono, Workers): no
 // node:crypto, config is injectable. Uses the hosted Tinfoil SDK router only.
@@ -68,6 +69,9 @@ export function createAttestedChat(opts: {factory?: Factory; deadlineMs?: number
   const deadlineMs = opts.deadlineMs ?? DEADLINE_MS;
   const source = opts.config ?? processEnv;
   return async (req) => {
+    // Anything offered to the enclave is private from here on: the router refuses
+    // this exact object on every non-attested lane, even after a failure here.
+    if (req && typeof req === 'object') tagPrivate(req);
     let timer: ReturnType<typeof setTimeout> | undefined;
     const controller = new AbortController();
     try {
@@ -120,8 +124,9 @@ function minimalChart(chart: Chart) {
 export function createReadingGenerator(factory?: Factory, deadlineMs = DEADLINE_MS, config?: ConfigSource) {
   const chat = createAttestedChat({factory, deadlineMs, config});
   return async (chart: Chart): Promise<InferenceResult> => {
-    let payload; try { payload = minimalChart(chart); } catch { throw new PrivateInferenceError(); }
-    const r = await chat({system:SYSTEM, maxTokens:1200, messages:[{role:'user', content:JSON.stringify(payload)}]});
+    let payload; try { payload = minimalChart(chart); assertMinimizedChart(payload); } catch { throw new PrivateInferenceError(); }
+    // Tagged so the router refuses it on any non-attested lane, whatever its content.
+    const r = await chat(tagPrivate({system:SYSTEM, maxTokens:1200, messages:[{role:'user', content:JSON.stringify(payload)}]}));
     return {...r, text:`${DISCLAIMER}\n\n${r.text}`};
   };
 }
