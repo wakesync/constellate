@@ -2,7 +2,7 @@
 """Tiny stdio MCP server exposing swarm_remember + swarm_recall. Stdlib only.
 
 Claude Code:
-  claude mcp add swarm-memory -e SWARM_URL=https://<instance> -e SWARM_SECRET=... \
+  claude mcp add membrane -e SWARM_URL=https://<instance> -e SWARM_SECRET=... \
       -e SWARM_USER=alice -- python3 /path/to/clients/mcp/swarm_mcp.py
 """
 import json
@@ -43,7 +43,7 @@ for line in sys.stdin:
     if method == "initialize":
         reply(id_, {"protocolVersion": req.get("params", {}).get("protocolVersion", "2025-06-18"),
                     "capabilities": {"tools": {}},
-                    "serverInfo": {"name": "hivemind", "version": "0.2.0"}})
+                    "serverInfo": {"name": "membrane", "version": "0.2.0"}})
     elif method == "tools/list":
         reply(id_, {"tools": MCP_TOOLS})
     elif method == "tools/call":
@@ -53,7 +53,7 @@ for line in sys.stdin:
             out = swarm.dispatch(p.get("name"), p.get("arguments") or {})
             reply(id_, {"content": [{"type": "text", "text": json.dumps(out)}], "isError": False})
         except Exception as e:  # surface as tool error, keep server alive
-            reply(id_, {"content": [{"type": "text", "text": f"swarm-memory error: {e}"}], "isError": True})
+            reply(id_, {"content": [{"type": "text", "text": f"membrane error: {e}"}], "isError": True})
     elif method == "ping":
         reply(id_, {})
     else:

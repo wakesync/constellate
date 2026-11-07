@@ -1,4 +1,4 @@
-# swarm-memory: confidential shared memory for multiplayer agents
+# Membrane: confidential shared memory for multiplayer agents
 # Tinfoil Container config. Must live in a PUBLIC repo (it is the verification recipe).
 # For updates: edit this file, commit, run the Tinfoil Release workflow (e.g. v0.0.2).
 #
@@ -28,7 +28,7 @@ networks:
 
 containers:
   - name: "memory-api"
-    image: "ghcr.io/wakesync/swarm-memory@sha256:__API_DIGEST__"
+    image: "ghcr.io/wakesync/membrane@sha256:__API_DIGEST__"
     networks: [swarm, stripe]
     env:
       - LLM_BASE_URL: "http://vllm:8001/v1"

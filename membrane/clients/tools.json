@@ -3,7 +3,7 @@
     "type": "function",
     "function": {
       "name": "swarm_remember",
-      "description": "Store a note in hivemind, a sealed shared memory. With org, members of that org (and, per the org's wall policy, others) benefit through synthesized answers but never read it verbatim. Without org it is personal: only you can ever recall it.",
+      "description": "Store a note in Membrane, a sealed shared memory. With org, members of that org (and, per the org's wall policy, others) benefit through synthesized answers but never read it verbatim. Without org it is personal: only you can ever recall it.",
       "parameters": {
         "type": "object",
         "properties": {
@@ -18,7 +18,7 @@
     "type": "function",
     "function": {
       "name": "swarm_recall",
-      "description": "Ask hivemind a question. Returns an answer synthesized across your personal notes, every org you belong to, and any org whose wall allows derived answers, plus counts per access class and optional 'an org in your network has context' hints. Never raw text, never who wrote what.",
+      "description": "Ask Membrane a question. Returns an answer synthesized across your personal notes, every org you belong to, and any org whose wall allows derived answers, plus counts per access class and optional 'an org in your network has context' hints. Never raw text, never who wrote what.",
       "parameters": {
         "type": "object",
         "properties": {

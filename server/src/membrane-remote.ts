@@ -18,14 +18,19 @@ export interface RemoteMembraneOptions {
   namespace:string;         // prefixes user ids, e.g. 'cst' -> cst:fx_ada
   timeoutMs?:number;
   fetcher?:Fetcher;         // test seam; production uses attested SecureClient.fetch
+  // Local development / CI only: plain HTTP to a Membrane on loopback, NO attestation.
+  // Never accepted for non-loopback origins, never in production (see membraneModeFromEnv).
+  insecureLoopback?:boolean;
 }
+export const LOOPBACK=/^http:\/\/(127\.0\.0\.1|localhost|\[::1\]):\d{1,5}$/;
 
 const ID = /^[A-Za-z0-9_.:@-]{1,64}$/;
 
 export function createRemoteMembrane(o:RemoteMembraneOptions):Membrane {
-  if(!/^https:\/\/[^/]+$/.test(o.origin)||!o.configRepo||!o.secret||o.secret.length<16||!/^[a-z0-9]{1,8}$/.test(o.namespace))throw new Error('Invalid Membrane configuration');
+  const local=o.insecureLoopback===true&&LOOPBACK.test(o.origin);
+  if(!(local||/^https:\/\/[^/]+$/.test(o.origin))||!o.configRepo||!o.secret||o.secret.length<16||!/^[a-z0-9]{1,8}$/.test(o.namespace))throw new Error('Invalid Membrane configuration');
   const timeoutMs=o.timeoutMs??20_000;
-  let fetcher:Promise<Fetcher>|undefined=o.fetcher?Promise.resolve(o.fetcher):undefined;
+  let fetcher:Promise<Fetcher>|undefined=o.fetcher?Promise.resolve(o.fetcher):local?Promise.resolve((url:string,init:RequestInit)=>fetch(url,init)):undefined;
   const attested=()=>fetcher??=(async()=>{
     const c=new SecureClient({enclaveURL:o.origin,configRepo:o.configRepo,transport:'ehbp'} as any);
     await c.ready();
@@ -64,5 +69,11 @@ export function createRemoteMembrane(o:RemoteMembraneOptions):Membrane {
 
 export function remoteMembraneFromEnv(env:Record<string,string|undefined>=process.env):Membrane|undefined{
   if(!env.MEMBRANE_ORIGIN||!env.MEMBRANE_SWARM_SECRET)return undefined;
-  return createRemoteMembrane({origin:env.MEMBRANE_ORIGIN,configRepo:env.MEMBRANE_CONFIG_REPO??'wakesync/constellate',secret:env.MEMBRANE_SWARM_SECRET,namespace:env.MEMBRANE_NAMESPACE??'cst'});
+  return createRemoteMembrane({origin:env.MEMBRANE_ORIGIN,configRepo:env.MEMBRANE_CONFIG_REPO??'wakesync/constellate',secret:env.MEMBRANE_SWARM_SECRET,namespace:env.MEMBRANE_NAMESPACE??'cst',insecureLoopback:membraneModeFromEnv(env)==='local-unattested'});
+}
+// 'attested': SecureClient verifies the enclave against MEMBRANE_CONFIG_REPO before any byte.
+// 'local-unattested': loopback dev/CI Membrane, opt-in via MEMBRANE_INSECURE_LOOPBACK=1, refused in production.
+export function membraneModeFromEnv(env:Record<string,string|undefined>=process.env):'attested'|'local-unattested'|'unconfigured'{
+  if(!env.MEMBRANE_ORIGIN||!env.MEMBRANE_SWARM_SECRET)return 'unconfigured';
+  return LOOPBACK.test(env.MEMBRANE_ORIGIN)&&env.MEMBRANE_INSECURE_LOOPBACK==='1'&&env.NODE_ENV!=='production'?'local-unattested':'attested';
 }

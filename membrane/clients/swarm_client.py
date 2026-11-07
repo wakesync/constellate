@@ -1,4 +1,4 @@
-"""Zero-dependency Python client for swarm-memory (stdlib only).
+"""Zero-dependency Python client for Membrane (stdlib only).
 
     from swarm_client import Swarm
     s = Swarm()                       # SWARM_URL, SWARM_SECRET, SWARM_USER from env

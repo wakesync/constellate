@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Minimal hivemind client. Set SWARM_URL + SWARM_SECRET.
+# Minimal Membrane client. Set SWARM_URL + SWARM_SECRET.
 #   swarm.sh remember <user> "<text>" [org]     # no org = personal (author-only)
 #   swarm.sh recall   <user> "<question>"
 #   swarm.sh org-create <user> <org-id> "<name>" [sealed|signal|open-derived]

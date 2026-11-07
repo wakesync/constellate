@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Pretty-print a hivemind /recall response from stdin (demo helper)."""
+"""Pretty-print a Membrane /recall response from stdin (demo helper)."""
 import json
 import sys
 import textwrap

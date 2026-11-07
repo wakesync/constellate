@@ -28,5 +28,5 @@ jobs:
           platforms: linux/amd64
           push: true
           provenance: false
-          tags: ghcr.io/${{ github.repository_owner }}/swarm-memory:${{ inputs.tag }}
-      - run: echo "PIN THIS -> ghcr.io/${{ github.repository_owner }}/swarm-memory@${{ steps.push.outputs.digest }}" | tee -a $GITHUB_STEP_SUMMARY
+          tags: ghcr.io/${{ github.repository_owner }}/membrane:${{ inputs.tag }}
+      - run: echo "PIN THIS -> ghcr.io/${{ github.repository_owner }}/membrane@${{ steps.push.outputs.digest }}" | tee -a $GITHUB_STEP_SUMMARY
