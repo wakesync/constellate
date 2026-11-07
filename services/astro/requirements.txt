@@ -1,0 +1,5 @@
+kerykeion
+fastapi
+uvicorn
+pydantic[email]
+python-dotenv

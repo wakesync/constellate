@@ -1,0 +1,17 @@
+{
+  "name": "constellate",
+  "private": true,
+  "license": "MIT",
+  "version": "1.0.0",
+  "description": "Constellate, an AI astrologer for you and your friends. constellate.me",
+  "workspaces": ["apps/*"],
+  "scripts": {
+    "dev:web": "npm --workspace apps/web run dev",
+    "dev:api": "npm --workspace apps/api run dev",
+    "build": "npm --workspace apps/web run build",
+    "deploy:api": "npm --workspace apps/api run deploy",
+    "deploy:web": "npm --workspace apps/web run deploy",
+    "typecheck": "npm --workspace apps/api run typecheck && npm --workspace apps/web run typecheck"
+  },
+  "engines": { "node": ">=20" }
+}

@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="parch" cx="50%" cy="42%" r="62%">
+      <stop offset="0%" stop-color="#f9f1de"/>
+      <stop offset="100%" stop-color="#e9dec1"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#parch)"/>
+  <!-- maskable safe zone: keep all content within the central 60% circle -->
+  <circle cx="256" cy="256" r="110" fill="none" stroke="#a98a3d" stroke-width="2.5" opacity="0.5"/>
+  <g transform="translate(256 256) scale(0.62)">
+    <path d="M0 -118 L26 -30 L118 0 L26 30 L0 118 L-26 30 L-118 0 L-26 -30 Z" fill="#a98a3d"/>
+    <path d="M0 -118 L26 -30 L118 0 L26 30 L0 118 L-26 30 L-118 0 L-26 -30 Z"
+          fill="none" stroke="#5e221f" stroke-width="4" opacity="0.5"/>
+    <circle cx="-18" cy="-18" r="9" fill="#e8cf86" opacity="0.9"/>
+  </g>
+</svg>

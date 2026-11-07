@@ -1,0 +1,16 @@
+# Copy to .dev.vars (gitignored) for local `wrangler dev`.
+# These mirror the prod secrets set via `wrangler secret put` (see README.md).
+
+# Shared bearer token the API uses to call the astro sidecar.
+ASTRO_BEARER=dev-astro-bearer-change-me
+
+# OpenRouter key for narrative generation. If unset, the API gracefully degrades
+# to non-AI fallbacks (synastry + transit reflections still render).
+OPENROUTER_API_KEY=
+
+# Optional local overrides (defaults come from wrangler.toml [vars]):
+# RP_ID=localhost
+# RP_NAME=Constellate (dev)
+# APP_ORIGIN=http://localhost:5173
+# ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+# ASTRO_URL=http://127.0.0.1:8000

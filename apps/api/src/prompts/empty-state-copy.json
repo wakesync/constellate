@@ -1,0 +1,20 @@
+{
+  "journal_empty": "no entries yet. the page is waiting.",
+  "journal_shared_empty": "nothing has been shared with this constellation yet. the quiet counts too.",
+  "constellation_empty": "no constellation yet. choose your first sky.",
+  "constellation_members_empty": "no one else here yet. share the invite when you are ready.",
+  "synastry_no_birth_data": "they have not entered their birth data. nothing to map yet.",
+  "synastry_self_only": "a chart cannot meet itself. invite someone in.",
+  "synastry_loading": "the two charts are being laid over each other.",
+  "transits_loading": "the sky is being read.",
+  "transits_quiet": "the sky is quiet today. notice what you do with the silence.",
+  "chart_loading": "drawing the sky you were born under.",
+  "chart_missing": "no birth data on file. begin there.",
+  "places_no_results": "no place by that name. try another spelling, or the nearest city.",
+  "search_empty": "nothing here yet. the words have not landed.",
+  "invite_pending": "the invite is open. share when ready.",
+  "invite_expired": "this invite has closed. ask for another.",
+  "offline": "no connection to the sky. the chart will wait.",
+  "error_generic": "something did not arrive. try again in a moment.",
+  "report_pending": "the report is being written. this takes a minute."
+}

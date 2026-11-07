@@ -1,0 +1,24 @@
+name = "constellate-app"
+# account_id = "<your-cloudflare-account-id>"
+main = "worker/index.ts"
+compatibility_date = "2024-11-12"
+workers_dev = false
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+
+[observability]
+enabled = true
+
+# The app is served at the APEX: constellate.me (memorable, the link you share).
+# www.constellate.me redirects to apex via a Cloudflare Bulk Redirect / Rule
+# . Passkey RP_ID = constellate.me covers apex + subdomains.
+[[routes]]
+pattern = "constellate.me"
+custom_domain = true
+
+# NOTE: the SPA's API URL is a BUILD-TIME Vite var (VITE_API_URL), set in
+# .env.production, NOT a Worker runtime var. The default in src/lib/api.ts is
+# already https://api.constellate.me so a plain build is correct.
