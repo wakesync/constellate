@@ -673,3 +673,6 @@ from app import router  # noqa: E402,F401
 
 # exact scoped shares (share/read/revoke), never touch memories or /recall
 from app import shares  # noqa: E402,F401
+
+# permissioned circle knowledge graph on cognee (optional dep; routes 503 without it)
+from app import circle_graph  # noqa: E402,F401

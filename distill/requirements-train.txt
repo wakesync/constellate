@@ -1,0 +1,6 @@
+# GPU training / eval only. Generator is TS (uses server/ deps), teacher.py and eval.py are stdlib.
+torch>=2.5
+transformers>=4.46
+peft>=0.13
+datasets>=3.0
+accelerate>=1.0

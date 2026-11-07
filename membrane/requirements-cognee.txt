@@ -1,0 +1,3 @@
+# Optional: enables MEMORY_BACKEND=cognee and the /circle-graph routes (app/circle_graph.py).
+# Heavy (~1GB). Without it those routes return 503 and the app server uses its SQLite circle graph.
+cognee==1.6.7

@@ -1,0 +1,4 @@
+data/*.jsonl
+!data/*.sample.jsonl
+runs/
+__pycache__/
