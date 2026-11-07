@@ -1,4 +1,4 @@
-"""swarm-memory: confidential shared memory for multiplayer agents.
+"""Membrane: confidential shared memory for multiplayer agents.
 
 Runs inside a Tinfoil enclave. Plaintext memories, embeddings and answer
 synthesis all stay inside the enclave boundary:
@@ -262,7 +262,7 @@ def make_backend():
 
             return CogneeBackend()
         except Exception as e:  # pragma: no cover
-            print(f"[swarm-memory] cognee backend unavailable ({e!r}); falling back to sqlite")
+            print(f"[membrane] cognee backend unavailable ({e!r}); falling back to sqlite")
     return SqliteBackend()
 
 
@@ -307,7 +307,7 @@ def llm_answer(query: str, hits: list[dict]) -> str | None:
         out = re.sub(r"<think>.*?</think>", "", msg.get("content") or "", flags=re.S).strip()
         return scrub(out) if out else None
     except Exception as e:
-        print(f"[swarm-memory] llm unavailable: {type(e).__name__}")
+        print(f"[membrane] llm unavailable: {type(e).__name__}")
         return None
 
 

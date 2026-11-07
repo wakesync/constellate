@@ -7,6 +7,9 @@ import {pathToFileURL} from 'node:url';
 import {openDatabase,migrateProduct} from './db.js';
 import {createAuth} from './auth.js';
 import {mountCircles,type Membrane} from './circles.js';
+import {mountCooperation} from './cooperation.js';
+import {generateConversation} from './conversation.js';
+import {remoteMembraneFromEnv} from './membrane-remote.js';
 import type {Conversation} from './conversation.js';
 import {birthSchema,type Profile,type Reading,type Chart,type InferenceResult} from './contracts.js';
 import {calculateChart} from './chart.js';
@@ -53,9 +56,15 @@ export async function createApp(options:{dbPath:string;baseURL:string;secret:str
  app.get('/api/readings/:id',(req,res)=>{const row=db.prepare('SELECT data FROM reading WHERE id=? AND userId=?').get(req.params.id,res.locals.user.id) as {data:string}|undefined;if(!row){res.status(404).json({error:'Reading not found'});return;}res.json({reading:JSON.parse(row.data)});});
  app.delete('/api/readings/:id',(req,res)=>{const r=db.prepare('DELETE FROM reading WHERE id=? AND userId=?').run(req.params.id,res.locals.user.id);res.status(r.changes?204:404).end();});
  const circles=mountCircles(app,db,limiter,{converse:options.converse,membrane:options.membrane});
+ const cooperation=mountCooperation(app,db,{membrane:options.membrane,converse:options.converse??generateConversation,limiter,directory:{
+  isMember:(c,u)=>Boolean(db.prepare('SELECT 1 FROM circle_member WHERE circleId=? AND userId=?').get(c,u)),
+  members:c=>(db.prepare('SELECT userId FROM circle_member WHERE circleId=? ORDER BY userId').all(c) as {userId:string}[]).map(r=>r.userId),
+  displayName:u=>(db.prepare('SELECT name FROM user WHERE id=?').get(u) as {name:string}|undefined)?.name??'member',
+ }});
+ const revokeAll=async(uid:string)=>{await circles.revokeUser(uid);await cooperation.revokeUser(uid);};
  const clear=db.transaction((uid:string)=>{db.prepare('DELETE FROM reading WHERE userId=?').run(uid);db.prepare('DELETE FROM profile WHERE userId=?').run(uid);});
- app.delete('/api/profile',async(_req,res)=>{try{await circles.revokeUser(res.locals.user.id);}catch{res.status(503).json({error:'Access blocked locally. Remote share revocation must succeed before deletion; please retry.'});return;}clear(res.locals.user.id);res.status(204).end();});
- app.delete('/api/account',async(_req,res)=>{if((options.now??Date.now)()-new Date(res.locals.session.createdAt).getTime()>5*60_000){res.status(403).json({error:'For account deletion, please sign out and sign in again, then retry within five minutes.'});return;}try{await circles.revokeUser(res.locals.user.id);}catch{res.status(503).json({error:'Access blocked locally. Remote share revocation must succeed before deletion; please retry.'});return;}db.transaction(()=>{const uid=res.locals.user.id;clear(uid);limiter.eraseUser(uid);db.prepare('DELETE FROM session WHERE userId=?').run(uid);db.prepare('DELETE FROM account WHERE userId=?').run(uid);db.prepare('DELETE FROM user WHERE id=?').run(uid);})();res.status(204).end();});
+ app.delete('/api/profile',async(_req,res)=>{try{await revokeAll(res.locals.user.id);}catch{res.status(503).json({error:'Access blocked locally. Remote share revocation must succeed before deletion; please retry.'});return;}clear(res.locals.user.id);res.status(204).end();});
+ app.delete('/api/account',async(_req,res)=>{if((options.now??Date.now)()-new Date(res.locals.session.createdAt).getTime()>5*60_000){res.status(403).json({error:'For account deletion, please sign out and sign in again, then retry within five minutes.'});return;}try{await revokeAll(res.locals.user.id);}catch{res.status(503).json({error:'Access blocked locally. Remote share revocation must succeed before deletion; please retry.'});return;}db.transaction(()=>{const uid=res.locals.user.id;clear(uid);limiter.eraseUser(uid);db.prepare('DELETE FROM session WHERE userId=?').run(uid);db.prepare('DELETE FROM account WHERE userId=?').run(uid);db.prepare('DELETE FROM user WHERE id=?').run(uid);})();res.status(204).end();});
  app.use(express.static(resolve('public')));
  app.use((err:unknown,_req:express.Request,res:express.Response,_next:express.NextFunction)=>{res.status(500).json({error:'Request could not be completed'});});
  return {app,db,auth};
@@ -63,6 +72,6 @@ export async function createApp(options:{dbPath:string;baseURL:string;secret:str
 if(process.argv[1]&&import.meta.url===pathToFileURL(resolve(process.argv[1])).href){
  const port=Number(process.env.PORT??3400);const baseURL=process.env.APP_URL??`http://localhost:${port}`;
  if(process.env.NODE_ENV==='production'&&!baseURL.startsWith('https://'))throw new Error('Production requires HTTPS APP_URL');
- const {app}=await createApp({dbPath:process.env.DB_PATH??'data/constellate.sqlite',baseURL,secret:process.env.BETTER_AUTH_SECRET??'',trustedLoopbackProxy:process.env.TRUST_LOOPBACK_PROXY==='1'});
+ const {app}=await createApp({dbPath:process.env.DB_PATH??'data/constellate.sqlite',baseURL,secret:process.env.BETTER_AUTH_SECRET??'',trustedLoopbackProxy:process.env.TRUST_LOOPBACK_PROXY==='1',membrane:remoteMembraneFromEnv()});
  app.listen(port,'127.0.0.1',()=>console.log(`Constellate listening on port ${port}`));
 }

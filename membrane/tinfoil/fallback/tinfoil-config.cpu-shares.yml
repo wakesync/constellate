@@ -1,0 +1,40 @@
+# Membrane, CPU-only profile: exact share / read / revoke + signed per-user identity, no GPU.
+# This is all Constellate's circle grants and circle readings need from Membrane (synthesis of
+# circle readings runs on the separate Tinfoil inference enclave). Swap in for tinfoil-config.yml
+# when you don't need in-enclave /recall synthesis. Same rules: PUBLIC repo, measured per tag,
+# image pinned by sha256 digest (placeholder until the image is built, see tinfoil/pin.sh).
+cvm-version: 0.14.7
+cpus: 2
+memory: 8192
+
+networks:
+  sealed: {}                # no egress at all: share text can't leave the enclave
+
+containers:
+  - name: "memory-api"
+    image: "ghcr.io/wakesync/membrane@sha256:__API_DIGEST__"
+    networks: [sealed]
+    env:
+      - LLM_ENABLED: "0"    # no model in this profile; /shares never touches one anyway
+      - MEMORY_BACKEND: "sqlite"
+      - GRAPH_K: "2"
+      - DB_PATH: "/data/swarm.db"
+      - STRIPE_KEY: "none"
+    secrets:
+      - SWARM_SECRET        # HMAC secret; Constellate's server signs per-user as cst:<userId>
+    tmpfs:
+      /data: "size=256m,mode=1777"
+      /tmp: "size=128m,mode=1777"
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 1m
+
+shim:
+  upstream-container: "memory-api"
+  upstream-port: 8080
+  paths:
+    - /*
