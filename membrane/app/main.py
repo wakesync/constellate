@@ -53,7 +53,7 @@ if not STRIPE_KEY.startswith(("sk_", "rk_")):
 WEB_DIR = Path(os.environ.get("WEB_DIR", Path(__file__).resolve().parent.parent / "web"))
 TINFOIL_DIR = Path("/tinfoil")
 
-app = FastAPI(title="hivemind", version="0.2.0")
+app = FastAPI(title="membrane", version="0.2.0")
 _lock = threading.Lock()
 
 # ---------------------------------------------------------------- embeddings
@@ -91,7 +91,7 @@ def db() -> sqlite3.Connection:
     cols = {r[1] for r in c.execute("PRAGMA table_info(memories)")}
     if "org" not in cols:  # NULL org = personal memory, visible to author only
         c.execute("ALTER TABLE memories ADD COLUMN org TEXT")
-    # hivemind org layer (cognee vocabulary: org = tenant, org memory = dataset)
+    # Membrane org layer (cognee vocabulary: org = tenant, org memory = dataset)
     c.execute(
         """CREATE TABLE IF NOT EXISTS orgs(
              id TEXT PRIMARY KEY, name TEXT NOT NULL, wall TEXT NOT NULL,
@@ -270,7 +270,7 @@ backend = make_backend()
 
 # ---------------------------------------------------------------- synthesis
 SYSTEM = (
-    "You are hivemind, a sealed shared memory running in a confidential enclave. You are given "
+    "You are Membrane, a sealed shared memory running in a confidential enclave. You are given "
     "private notes from the asker and from orgs they may draw on. Answer the question by COMBINING facts across notes. Rules: "
     "never quote notes verbatim, never say who said what or which org a fact came from, never reveal names, emails, handles, "
     "phone numbers, keys or links. Paraphrase into one short, direct answer (max 5 sentences). "
@@ -408,7 +408,7 @@ def _inq(xs) -> str:
 def healthz():
     with _lock:
         n_orgs = conn().execute("SELECT COUNT(*) FROM orgs").fetchone()[0]
-    return {"ok": True, "product": "hivemind", "backend": backend.name, **backend.stats(),
+    return {"ok": True, "product": "membrane", "backend": backend.name, **backend.stats(),
             "orgs": n_orgs, "llm": LLM_MODEL if LLM_ENABLED else None}
 
 

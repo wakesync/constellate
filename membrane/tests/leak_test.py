@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""hivemind leak test (stdlib only). Run against a FRESH instance:
+"""Membrane leak test (stdlib only). Run against a FRESH instance:
 
     SWARM_URL=http://127.0.0.1:18091 SWARM_SECRET=... python3 tests/leak_test.py
 

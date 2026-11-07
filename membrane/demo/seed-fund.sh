@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# hivemind demo: the conduit scenario. Three overlapping orgs, four people, two
+# Membrane demo: the conduit scenario. Three overlapping orgs, four people, two
 # of whom sit in two orgs. All names and numbers are made up.
 #
 #   Ledger Fund      (fund)     wall: signal   members: mara (admin), ines
