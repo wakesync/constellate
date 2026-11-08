@@ -175,7 +175,7 @@ export async function runTurn(
     }
     approxTokens += 700; // coarse budget accounting per round-trip
 
-    const calls = choice.message.tool_calls ?? [];
+    let calls = choice.message.tool_calls ?? [];
     if (calls.length === 0) {
       // Final answer. Enforce no-fact-without-a-tool.
       let text = (choice.message.content ?? "").trim();
@@ -194,6 +194,7 @@ export async function runTurn(
         if (retry?.message?.tool_calls?.length) {
           // She chose to fetch. Fall through by re-entering the loop logic:
           choice.message.tool_calls = retry.message.tool_calls;
+          calls = retry.message.tool_calls;
           choice.message.content = retry.message.content ?? "";
         } else {
           const hedged = (retry?.message?.content ?? "").trim();

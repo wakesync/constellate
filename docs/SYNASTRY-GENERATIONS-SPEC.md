@@ -5,10 +5,7 @@ should be able to switch between them, and it should not regen everytime. also w
 to be able to see all readings and intuitive ux for how many readings done, we'll
 probably have credits in the future."
 
-Incident that motivated this: on 07-30 six synastry narratives were generated for one
-pair across three lenses, and each regen **destroyed** the previous one because
-`synastry_reports` is a single-row-per-pair UPSERT. Recovery required manual
-archaeology in the LLM traces. That failure mode must be structurally impossible.
+A single-row-per-pair UPSERT destroys history. Append-only generations make that failure structurally impossible.
 
 ## Problems with current design
 
@@ -109,17 +106,10 @@ SELECT user_a_id, user_b_id, 'syng_bf_' || id, unixepoch() FROM synastry_reports
   note, excluded from the count of "readings cast"? NO — count them (they cost a
   call) but flag them visually. Decision: count everything that hit the model.
 
-### 4. Backfill of tonight's six variants
+### 4. Migration
 
-Archived at `~/.moltbot/projects/constellate/syn-generations-2026-07-30/`
-(trace line numbers 2731, 3329, 3330, 3334, 3337, 3338 from
-trace-2026-07-30.jsonl). Builder: write a one-off script (ops/) that inserts all
-six as generations for the ada+bram pair with their true lenses
-(2731 + 3329 + 3330 + 3338 = roommate-family of prompts — check each request body
-for the exact lens marker; 3334 = collaborator; 3337 = romantic) and correct
-generated_at timestamps from the trace, then sets active = the one currently in
-synastry_reports (the 08:55b "one house, two clocks" roommate reading). Verify
-against prod D1 (constellate-prod) with a dry-run print first.
+Existing saved rows become their first generation through the schema migration.
+No private backfill scripts or production readings are included.
 
 ### 5. Non-goals (this pass)
 
@@ -136,15 +126,7 @@ against prod D1 (constellate-prod) with a dry-run print first.
 3. Switch active to an older reading → GET returns it for BOTH members.
 4. Romantic gate: flip a member's preference to forbid romantic → romantic gens
    vanish from list, active falls back, PUT to a romantic gen 404s.
-5. Backfill: all six 07-30 readings visible in the UI drawer for the pair,
-   counter reads "6 readings cast".
+5. Synthetic migration fixtures remain visible in the UI drawer and counter.
 6. Migration is additive + idempotent; deploy order safe (migrate → api → web).
 7. Screenshots (desktop + mobile) of the drawer, counter, empty state, and
    lens-tag states in the receipt. Impeccable/taste review pass on the drawer UI.
-
-## Build notes
-
-- Model policy: fable + impeccable + taste + frontend-design skills (constellate
-  standing rule).
-- Repo: ~/projects/constellate (monorepo). Workers: constellate-api,
-  constellate-app. D1: constellate-prod. Deploy via wrangler as in ops/.

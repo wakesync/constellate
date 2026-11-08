@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createApp} from '../src/server.js';
-import {protectedOrigin} from '../ops/origin.js';
+import {protectedOrigin} from '../adapters/origin.js';
 
 test('origin gate authenticates before accepting narrow client identity',async()=>{
  const origin='http://localhost:3514';const token='synthetic-origin-secret-12345678901234567890';

@@ -73,7 +73,11 @@ test('full product shares attested transport and fails closed', async t => {
     assert.match((await chat(env, messages, false))?.message?.content ?? '', /reflective answer/);
     finish = 'length';
     assert.equal(await chat(env, messages, false), null, 'partial completion fails closed');
-    finish = 'stop'; verified = false;
+    finish = 'stop';
+    const beforeOversize = sent;
+    assert.equal(await chat(env, [{ role: 'user', content: 'x'.repeat(16001) }], true), null);
+    assert.equal(sent, beforeOversize, 'oversized tool transcript is not sent');
+    verified = false;
     const before = sent;
     assert.equal(await chat(env, messages, true), null);
     assert.equal(sent, before);
