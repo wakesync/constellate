@@ -26,6 +26,12 @@ export const ROUTING_TABLE = Object.freeze({
   'synastry': {sensitivity: 'private', route: 'tinfoil-enclave'},
   'agent-memory': {sensitivity: 'private', route: 'tinfoil-enclave'},
   'agent-exchange': {sensitivity: 'private', route: 'tinfoil-enclave'},
+  // Full product (apps/api) kinds. Personalized transits use the member's
+  // location, so they are private even though "today's sky" sounds public.
+  'typology-reading': {sensitivity: 'private', route: 'tinfoil-enclave'},
+  'convergence-pair': {sensitivity: 'private', route: 'tinfoil-enclave'},
+  'sky-reflection': {sensitivity: 'private', route: 'tinfoil-enclave'},
+  'circle-agent': {sensitivity: 'private', route: 'tinfoil-enclave'},
   'daily-transits': {sensitivity: 'public', route: 'darkbloom'},
   'sign-overview': {sensitivity: 'public', route: 'darkbloom'},
 } as const satisfies Record<string, {sensitivity: Sensitivity; route: Route}>);
@@ -153,6 +159,27 @@ export function assertMinimizedChart(payload: unknown): void {
   for (const name of ['iso-date', 'clock-time', 'iana-zone', 'email'] as const) {
     const re = BIRTH_FIELD_PATTERNS.find(([n]) => n === name)![1];
     if (re.test(wire)) fail(name);
+  }
+}
+
+// Raw birth/identity keys that must never survive minimization in structured
+// evidence. Mirrors the product minimizer's omit list; asserted, not trusted.
+export const RAW_BIRTH_KEYS: ReadonlySet<string> = new Set(['input', 'birth', 'birth_data', 'date_local', 'date_utc', 'birth_date', 'birth_time', 'latitude', 'longitude', 'lat', 'lng', 'timezone', 'timeZone', 'tz', 'place_name', 'email', 'design_datetime_utc', 'calculatedAt']);
+
+/** Throws if any nested object (including JSON-in-string) still carries a raw birth key. */
+export function assertNoRawBirthKeys(value: unknown, depth = 0): void {
+  if (depth > 64) throw new PrivacyRouteError('evidence too deep to verify');
+  if (Array.isArray(value)) { for (const v of value) assertNoRawBirthKeys(v, depth + 1); return; }
+  if (value && typeof value === 'object') {
+    for (const [k, v] of Object.entries(value)) {
+      if (RAW_BIRTH_KEYS.has(k)) throw new PrivacyRouteError(`evidence still carries ${k}`);
+      assertNoRawBirthKeys(v, depth + 1);
+    }
+    return;
+  }
+  if (typeof value === 'string' && /^[\[{]/.test(value.trim())) {
+    let parsed: unknown; try { parsed = JSON.parse(value); } catch { return; }
+    assertNoRawBirthKeys(parsed, depth + 1);
   }
 }
 

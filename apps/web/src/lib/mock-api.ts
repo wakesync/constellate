@@ -9,6 +9,7 @@ import type {
   ConstellationMember,
   JournalEntry,
   SkyToday,
+  PublicSky,
   SynastryReport,
   PlaceLookup,
   Astrocartography,
@@ -553,6 +554,14 @@ export const mock = {
   async skyToday(): Promise<SkyToday> {
     await sleep(220);
     return MOCK_SKY;
+  },
+  async publicSky(): Promise<PublicSky> {
+    await sleep(120);
+    return {
+      day: new Date().toISOString().slice(0, 10), moonPhase: "waxing gibbous",
+      positions: [{ body: "Sun", sign: "Scorpio", degree: 15 }, { body: "Moon", sign: "Pisces", degree: 4 }],
+      copy: { sensitivity: "public", source: "template", model: null, text: "The Sun is in Scorpio, a season of depth and honesty. Take what resonates as a prompt for reflection, not a forecast." },
+    };
   },
 
   async constellations(): Promise<Constellation[]> {

@@ -69,10 +69,11 @@ export function createPublicLane(opts: {fetch?: typeof fetch; config?: PublicCon
       const timer = setTimeout(() => controller.abort(), timeoutMs);
       try {
         const res = await doFetch(`${DARKBLOOM_BASE_URL}/chat/completions`, {
-          method: 'POST', redirect: 'error', signal: controller.signal, body,
+          method: 'POST', redirect: 'manual', signal: controller.signal, body,
           headers: {'Authorization': `Bearer ${cfg.apiKey}`, 'Content-Type': 'application/json'},
         });
-        if (!res.ok) return template(fallback, 'provider-error');
+        // redirect:'manual' (portable across Node and Workers): a 3xx is a failure, never followed.
+        if (!res.ok || res.status >= 300) return template(fallback, 'provider-error');
         const raw = await res.text();
         if (raw.length > 64_000) return template(fallback, 'provider-error');
         const json = JSON.parse(raw) as {choices?: {message?: {content?: unknown}; finish_reason?: unknown}[]};

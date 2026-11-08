@@ -26,6 +26,7 @@ import { ERR, failKind, id, nowSec, readBody } from "./lib/http";
 import { RULES, rateLimit, sweepRateLimits } from "./lib/ratelimit";
 import { putChallenge, consumeChallenge, sweepChallenges } from "./lib/challenges";
 import { generateNarrative, FALLBACK } from "./lib/narrative";
+import { publicSky } from "./lib/public-sky";
 import { normalizeSynastryNarrative } from "./lib/synastry-format";
 import { RELATIONSHIP_KINDS, effectiveLens, pairContextFor, canonicalPair } from "./lib/relationship";
 import {
@@ -844,6 +845,7 @@ async function cachedReading(
   }
   const gen = await generateNarrative({
     env: c.env,
+    kind: "typology-reading",
     system,
     user: JSON.stringify(userPayload),
     maxTokens: 700,
@@ -1262,6 +1264,7 @@ async function convergencePairResponse(
   const mechDigest = mechanicsDigest(mechanics, aName, bName);
   const gen = await generateNarrative({
     env: c.env,
+    kind: "convergence-pair",
     system: convergencePairSystemPrompt(lens),
     relationshipContext: lens,
     user: JSON.stringify({ relationship_context: lens, ...payload, ...(mechDigest ? { pair_mechanics: mechDigest } : {}) }),
@@ -1739,6 +1742,20 @@ app.get("/journal/:id", async (c) => {
 // ---------------------------------------------------------------------------
 // sky / today
 // ---------------------------------------------------------------------------
+// Public lane (router: daily-transits -> Darkbloom). No session, no DB read, no
+// member data. The same note for everyone, cached per UTC day. Unconfigured =
+// deterministic template typed source:"template". The personalized reflection
+// below stays private (it uses the member's location).
+app.get("/public/sky/today", async (c) => {
+  try {
+    const transits = await publicSky(c.env).today();
+    c.header("cache-control", "public, max-age=900");
+    return c.json({ transits });
+  } catch {
+    return c.json({ error: "today's sky is unavailable" }, 503);
+  }
+});
+
 app.get("/sky/today", limiter(RULES.narrative), async (c) => {
   // IDOR fix: previously a ?user_id= param let any caller read another user's
   // birth coords + timezone via the transit. We now ALWAYS use the caller's own
@@ -1760,6 +1777,7 @@ app.get("/sky/today", limiter(RULES.narrative), async (c) => {
 
   const { text: reflection, degraded } = await generateNarrative({
     env: c.env,
+    kind: "sky-reflection",
     system: transitSystemPrompt,
     user: JSON.stringify(sky),
     maxTokens: 320,
@@ -1931,6 +1949,7 @@ app.post("/synastry/:other_user_id", limiter(RULES.synastry), async (c) => {
 
   const gen = await generateNarrative({
     env: c.env,
+    kind: "synastry",
     system: synastrySystemPrompt(lens, !!mechDigest, zodiac),
     relationshipContext: lens,
     user: JSON.stringify({ person_a_name: personAName, person_b_name: personBName, relationship_context: lens, cast_provenance: { zodiac_system: zodiac, sky: zodiac === "sidereal" ? "fixed-star Lahiri" : "seasonal tropical" }, grid: aspects, ...(mechDigest ? { pair_mechanics: mechDigest } : {}) }),

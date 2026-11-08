@@ -14,3 +14,8 @@ TINFOIL_MODEL=
 # APP_ORIGIN=http://localhost:5173
 # ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
 # ASTRO_URL=http://127.0.0.1:8000
+
+# Optional public lane (GET /public/sky/today only, zero personal data).
+# Unset = deterministic non-AI template. Never used for readings, synastry or circle agents.
+DARKBLOOM_API_KEY=
+DARKBLOOM_MODEL=

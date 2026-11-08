@@ -152,7 +152,7 @@ test('leak regression: birth fields never reach public prompts', async t => {
     const {url, init} = pub.calls[0]!;
     assert.equal(url, `${DARKBLOOM_BASE_URL}/chat/completions`);
     assert.equal(DARKBLOOM_BASE_URL, 'https://api.darkbloom.dev/v1');
-    assert.equal(init.redirect, 'error');
+    assert.equal(init.redirect, 'manual');
     const body = String(init.body);
     assert.deepEqual(findBirthFields(JSON.parse(body).messages.map((m: {content: string}) => m.content).join('\n')), []);
     for (const needle of [...BIRTH_NEEDLES, '2026', '11-07', 'cookie', 'session']) assert.ok(!body.toLowerCase().includes(needle.toLowerCase()), needle);

@@ -16,6 +16,7 @@ import type { Constellation, ConstellationMember } from "../lib/types";
 export default function Home() {
   const { user, setUser } = useAuth();
   const sky = useQuery({ queryKey: ["sky"], queryFn: () => api.skyToday() });
+  const publicSky = useQuery({ queryKey: ["public-sky"], queryFn: () => api.publicSky(), staleTime: 15 * 60_000, retry: false });
   const constellations = useQuery({
     queryKey: ["constellations"],
     queryFn: () => api.constellations(),
@@ -159,6 +160,20 @@ export default function Home() {
           </div>
         )}
       </Card>
+
+      {/* the shared sky: public lane, identical for everyone. Silent if unavailable. */}
+      {publicSky.data && (
+        <Card className="mb-8">
+          <CardHeading eyebrow="the sky for everyone" title={`a ${publicSky.data.moonPhase}`} />
+          <p className="text-[0.8rem] tracking-wide text-[var(--ink-faint)]">
+            {publicSky.data.positions.map((p) => `${p.body} ${p.degree}° ${p.sign}`).join(" · ")}
+          </p>
+          <p className="mt-3 font-serif italic text-[0.96rem] leading-relaxed text-[var(--ink-soft)] whitespace-pre-line">{publicSky.data.copy.text}</p>
+          <p className="mt-3 text-[0.75rem] text-[var(--ink-faint)]">
+            {publicSky.data.copy.source === "darkbloom" ? "written on the public lane (darkbloom)" : "fixed copy, no model"}. the same for everyone. your chart, readings and chats never take this route.
+          </p>
+        </Card>
+      )}
 
       {/* today's prompt */}
       {sky.data && (
