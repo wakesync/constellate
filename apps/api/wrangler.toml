@@ -1,31 +1,33 @@
-name = "constellate-api"
+name = "constellate-demo-api"
 main = "src/index.ts"
 compatibility_date = "2024-12-30"
+compatibility_flags = ["nodejs_compat"]
 # account_id = "<your-cloudflare-account-id>"
 workers_dev = false
 
-# api.constellate.me — custom domain on the new zone.
+# api.constellate.example — custom domain on the new zone.
 routes = [
-  { pattern = "api.constellate.me", custom_domain = true }
+  { pattern = "api.constellate.example", custom_domain = true }
 ]
 
 [vars]
-RP_ID = "constellate.me"
+RP_ID = "constellate.example"
 RP_NAME = "Constellate"
-APP_ORIGIN = "https://constellate.me"
+APP_ORIGIN = "https://constellate.example"
 # Comma-separated extra origins accepted by CORS + WebAuthn during the cutover.
 # Includes www + app subdomains and the legacy domain so existing sessions/passkeys
 # created on the old origins keep working until everyone re-enrolls.
-ALLOWED_ORIGINS = "https://www.constellate.me,https://app.constellate.me"
-ASTRO_URL = "https://astro.constellate.me"
+ALLOWED_ORIGINS = "https://www.constellate.example,https://app.constellate.example"
+ASTRO_URL = "https://astro.constellate.example"
 
 # Secrets (NOT in this file — set via `wrangler secret put`, see README):
 #   ASTRO_BEARER         shared bearer for the astro sidecar
-#   OPENROUTER_API_KEY   narrative generation
+#   TINFOIL_API_KEY     attested inference key
+#   TINFOIL_MODEL       supported model identifier
 
 [[d1_databases]]
 binding = "DB"
-database_name = "constellate-prod"
+database_name = "constellate-demo"
 database_id = "<your-d1-database-id>"
 
 [observability]

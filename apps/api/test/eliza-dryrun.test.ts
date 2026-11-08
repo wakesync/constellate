@@ -25,8 +25,8 @@ const memberships: Row[] = [
   { constellation_id: "c1", user_id: "u_rowan", role: "member" },
 ];
 const birth_data: Row[] = [
-  { user_id: "u_me", date_local: "1998-04-12T09:30", timezone: "America/Denver", latitude: 39.7, longitude: -104.9 },
-  { user_id: "u_rowan", date_local: "1996-08-01T14:00", timezone: "America/Denver", latitude: 39.7, longitude: -104.9 },
+  { user_id: "u_me", date_local: "2001-01-01T12:00", timezone: "UTC", latitude: 0, longitude: 0 },
+  { user_id: "u_rowan", date_local: "2002-01-01T12:00", timezone: "UTC", latitude: 0, longitude: 0 },
 ];
 const socionics_results: Row[] = [
   { user_id: "u_me", payload_json: JSON.stringify({ type: { code: "SEE", nickname: "the politician" } }) },
@@ -89,7 +89,7 @@ function makeEnv(): Env {
     };
     return stmt;
   };
-  return { DB: { prepare }, ASTRO_URL: "http://x", ASTRO_BEARER: "x", OPENROUTER_API_KEY: "" } as unknown as Env;
+  return { DB: { prepare }, ASTRO_URL: "http://x", ASTRO_BEARER: "x", TINFOIL_API_KEY: "" } as unknown as Env;
 }
 
 const env = makeEnv();

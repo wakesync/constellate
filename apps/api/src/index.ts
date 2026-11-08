@@ -834,7 +834,6 @@ async function cachedReading(
   userPayload: unknown,
   fallback: string,
   zodiac: Zodiac = "tropical",
-  model = "anthropic/claude-fable-5",
 ): Promise<Response> {
   const userId = c.get("userId");
   const existing = await c.env.DB.prepare("SELECT text, created_at FROM readings_cache WHERE user_id = ? AND kind = ? AND zodiac_system = ?")
@@ -845,7 +844,6 @@ async function cachedReading(
   }
   const gen = await generateNarrative({
     env: c.env,
-    model,
     system,
     user: JSON.stringify(userPayload),
     maxTokens: 700,
@@ -1264,7 +1262,6 @@ async function convergencePairResponse(
   const mechDigest = mechanicsDigest(mechanics, aName, bName);
   const gen = await generateNarrative({
     env: c.env,
-    model: "anthropic/claude-fable-5",
     system: convergencePairSystemPrompt(lens),
     relationshipContext: lens,
     user: JSON.stringify({ relationship_context: lens, ...payload, ...(mechDigest ? { pair_mechanics: mechDigest } : {}) }),
@@ -1763,7 +1760,6 @@ app.get("/sky/today", limiter(RULES.narrative), async (c) => {
 
   const { text: reflection, degraded } = await generateNarrative({
     env: c.env,
-    model: "anthropic/claude-fable-5",
     system: transitSystemPrompt,
     user: JSON.stringify(sky),
     maxTokens: 320,
@@ -1935,7 +1931,6 @@ app.post("/synastry/:other_user_id", limiter(RULES.synastry), async (c) => {
 
   const gen = await generateNarrative({
     env: c.env,
-    model: "anthropic/claude-fable-5",
     system: synastrySystemPrompt(lens, !!mechDigest, zodiac),
     relationshipContext: lens,
     user: JSON.stringify({ person_a_name: personAName, person_b_name: personBName, relationship_context: lens, cast_provenance: { zodiac_system: zodiac, sky: zodiac === "sidereal" ? "fixed-star Lahiri" : "seasonal tropical" }, grid: aspects, ...(mechDigest ? { pair_mechanics: mechDigest } : {}) }),

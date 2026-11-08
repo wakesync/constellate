@@ -2,7 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import App from "./PreviewApp";
+import ProductApp from "./App";
+import PreviewApp from "./PreviewApp";
+const App = import.meta.env.VITE_APP_MODE === "circles" ? PreviewApp : ProductApp;
 import "./styles/tokens.css";
 
 const queryClient = new QueryClient({

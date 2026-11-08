@@ -3,7 +3,7 @@
 //
 // This exercises the REAL production surface: the actual Hono app from
 // src/index.ts, over a real SQLite database with migrations 0001..0012
-// applied, with the astro sidecar + LLM pool stubbed at the fetch boundary.
+// applied, with the astro sidecar + attested SDK stubbed at the fetch boundary.
 // Every request below travels the same code path prod executes.
 //
 // Asserts:
@@ -89,7 +89,7 @@ for (const f of readdirSync(migrationsDir).sort()) {
 }
 
 // ---------------------------------------------------------------------------
-// fetch stub: fake astro sidecar + fake LLM pool. Every sidecar call is
+// fetch stub: fake astro sidecar + fake attested SDK. Every sidecar call is
 // logged with its path + zodiac so the tests can assert exactly which sky
 // each computation was requested under.
 // ---------------------------------------------------------------------------
@@ -127,6 +127,15 @@ function fakeGk(zodiac: string) {
   return { spheres: { lifes_work: { gene_key: zodiac === "sidereal" ? 34 : 20 } }, marker: `computed-under-${zodiac}` };
 }
 
+import { TinfoilAI } from "../../../server/node_modules/tinfoil/dist/index.js";
+TinfoilAI.prototype.ready = async function () {};
+TinfoilAI.prototype.getVerificationDocument = async function () { return { securityVerified: true } as any; };
+Object.defineProperty(TinfoilAI.prototype, "chat", { get() { return { completions: { create: async (body: any) => {
+  const blob = body.messages[1].content;
+  llmCalls.push({ system: body.messages[0].content, user: blob });
+  const marker = blob.includes("FRAME_TAGGED_V1") ? "dual-sky" : blob.includes("computed-under-sidereal") ? "sidereal-sky" : "tropical-sky";
+  return { choices: [{ message: { content: `a reading written under the ${marker}` }, finish_reason: "stop" }] };
+} } }; } });
 const realFetch = globalThis.fetch;
 globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
   const url = String(input);
@@ -145,16 +154,6 @@ globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
     else if (path === "/astrocartography") payload = { engine: "fake", generated_at: "now", lines: [], interpretations: {}, marker: `computed-under-${z}` };
     else return new Response("not found", { status: 404 });
     return new Response(JSON.stringify(payload), { status: 200, headers: { "content-type": "application/json" } });
-  }
-  if (url.includes("pool.example.com")) {
-    const body = JSON.parse(String(init?.body ?? "{}")) as { system?: string; messages?: Array<{ content?: string }> };
-    const blob = body.messages?.[0]?.content ?? "";
-    llmCalls.push({ system: body.system ?? "", user: blob });
-    const marker = blob.includes("FRAME_TAGGED_V1") ? "dual-sky" : blob.includes("computed-under-sidereal") ? "sidereal-sky" : "tropical-sky";
-    return new Response(
-      JSON.stringify({ content: [{ type: "text", text: `a reading written under the ${marker}` }] }),
-      { status: 200, headers: { "content-type": "application/json" } },
-    );
   }
   return realFetch(input as never, init as never);
 }) as typeof fetch;
@@ -188,8 +187,8 @@ const env = {
   APP_ORIGIN: "http://test.local",
   ASTRO_URL,
   ASTRO_BEARER: "test-bearer",
-  OPENROUTER_API_KEY: "",
-  POOL_API_KEY: "test-pool-key",
+  TINFOIL_API_KEY: "synthetic-inference-key",
+  TINFOIL_MODEL: "synthetic-model",
 } as const;
 
 const execCtx = { waitUntil(_p: Promise<unknown>) {}, passThroughOnException() {} };
