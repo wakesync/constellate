@@ -24,6 +24,8 @@ ASTRO_URL = "https://astro.constellate.example"
 #   ASTRO_BEARER         shared bearer for the astro sidecar
 #   TINFOIL_API_KEY     attested inference key
 #   TINFOIL_MODEL       supported model identifier
+#   DARKBLOOM_API_KEY   optional, public lane only (zero personal data)
+#   DARKBLOOM_MODEL     optional, model id from GET /v1/models
 
 [[d1_databases]]
 binding = "DB"

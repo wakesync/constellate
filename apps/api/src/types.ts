@@ -9,6 +9,9 @@ export type Env = {
   ASTRO_BEARER: string;
   TINFOIL_API_KEY?: string;
   TINFOIL_MODEL?: string;
+  // Public lane only (zero personal data). Unset = deterministic template.
+  DARKBLOOM_API_KEY?: string;
+  DARKBLOOM_MODEL?: string;
 };
 
 export type Authed = {

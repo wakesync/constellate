@@ -138,6 +138,14 @@ export interface ElizaReply {
   degraded?: boolean;
 }
 
+// Public lane: identical for everyone, no personal data in or out.
+export interface PublicSky {
+  day: string;
+  moonPhase: string;
+  positions: { body: string; sign: string; degree: number }[];
+  copy: { sensitivity: "public"; source: "darkbloom" | "template"; model: string | null; text: string };
+}
+
 export interface SkyToday {
   date: string;
   chart: NatalChart;          // transit chart for today

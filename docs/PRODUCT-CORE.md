@@ -15,7 +15,7 @@ Most product files were already present in the public base, identical to the pro
 
 ## One inference hook
 
-`apps/api/src/lib/inference.ts::productInference(env, request)` is the product hook. Every narrative and circle-agent turn calls it. It delegates to `server/src/inference.ts::createAttestedChat`, the same Tinfoil SDK path as hackathon readings and chats. Router integrations should classify every call at this product hook as private, including transit reflections computed using a member's location.
+`apps/api/src/lib/inference.ts::productInference(env, request)` is the product hook. Every narrative and circle-agent turn calls it. It delegates to `server/src/inference.ts::createAttestedChat`, the same Tinfoil SDK path as hackathon readings and chats. Every call site passes a router kind (`typology-reading`, `convergence-pair`, `synastry`, `sky-reflection`, `circle-agent`), all of which `server/src/router.ts` classifies as private. Transit reflections computed from a member's location count as private. `productInference` refuses any kind that doesn't resolve to the enclave, asserts that no raw birth key survived minimization, and tags the request so the public lane refuses it. The public lane (`GET /public/sky/today`, `apps/api/src/lib/public-sky.ts`) shares the server's router, Darkbloom client and ephemeris transit service. It reads no session or member data.
 
 Only `TINFOIL_API_KEY` and `TINFOIL_MODEL` select inference. No pool credentials, public-provider endpoint or fallback model. The shared SDK verifies attestation before dispatch, uses EHBP and per-request cache isolation, bounds input/output, and sanitizes failures. Missing configuration or failure yields explicit `degraded` non-AI copy. It is never cached as a successful reading.
 

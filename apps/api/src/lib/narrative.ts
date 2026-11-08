@@ -1,8 +1,10 @@
 import type { Env } from "../types";
-import { productInference } from "./inference";
+import { productInference, type ProductKind } from "./inference";
 
 type ChatArgs = {
   env: Env;
+  // Sensitivity router kind. Required so every call site is classified.
+  kind: ProductKind;
   system: string;
   user: string;
   maxTokens?: number;
@@ -31,7 +33,7 @@ export async function generateNarrative(args: ChatArgs): Promise<{ text: string;
       system: systemWithRelationshipGuard(args),
       messages: [{ role: "user", content: args.user }],
       maxTokens: args.maxTokens ?? 900,
-    });
+    }, undefined, args.kind);
     return { text: result.text, degraded: false };
   } catch {
     return { text: args.fallback, degraded: true };

@@ -26,7 +26,7 @@ The two backends retain separate authentication and storage. No real accounts, r
 
 - **Product (2.1):** the production UI and deterministic engines, plus the isolated circle backend. Offline tests are not a claim of hosted availability.
 - **Owned model (2.2):** a dedicated model may be served on confidential infrastructure. Source configuration alone is not evidence of a trained or live model.
-- **Sensitivity routing (2.3):** all product requests are private, including personalized transit reflections. The private path is Tinfoil-only. Public-copy routing can be added separately but must never accept member data.
+- **Sensitivity routing (2.3):** `server/src/router.ts` classifies every model call with a frozen table; unknown kinds are private. All product kinds (typology readings, convergence pairs, synastry, personalized sky reflections, circle agents) and circle-server readings/chats are private and Tinfoil-only, with no fallback. They are also tagged so the public lane refuses them even after an enclave failure. The only public kinds are daily transits and sign overviews, served by `GET /public/sky/today` (product) and `GET /api/transits/today` (circle server). Positions come from the local ephemeris, and prose comes from Darkbloom when `DARKBLOOM_API_KEY`/`DARKBLOOM_MODEL` are set, otherwise from a deterministic template typed `source: "template"`. A guard re-scans the exact outgoing messages for dates, years, times, zones, coordinates, emails, chart field names and non-astrology proper nouns, and throws instead of sending. Reading payloads and structured evidence are asserted minimized before the enclave. Darkbloom decrypts at its coordinator and provider, so it only ever gets zero-personal-data copy.
 - **Private cooperation (2.4):** the circle server lets independently authenticated members approve exact summaries, then runs two scoped agent turns. Revocation blocks future reads, not information already received.
 - **Memory (2.5):** Membrane provides signed identity, scoped namespaces and exact grants. Configuration and experimental graph code are not proof of an attested deployment.
 
@@ -69,8 +69,8 @@ VITE_APP_MODE=circles npm run dev:web
 
 ## Configuration
 
-- Product: `DB`, passkey `RP_ID`/`RP_NAME`, `APP_ORIGIN`/`ALLOWED_ORIGINS`, `ASTRO_URL`, `ASTRO_BEARER`, `TINFOIL_API_KEY`, `TINFOIL_MODEL`.
-- Circle server: `APP_URL`, `BETTER_AUTH_SECRET`, optional `DB_PATH` and `PORT`, `TINFOIL_API_KEY`, `TINFOIL_MODEL`, rate-limit settings in `server/.env.example`.
+- Product: `DB`, passkey `RP_ID`/`RP_NAME`, `APP_ORIGIN`/`ALLOWED_ORIGINS`, `ASTRO_URL`, `ASTRO_BEARER`, `TINFOIL_API_KEY`, `TINFOIL_MODEL`, optional `DARKBLOOM_API_KEY`/`DARKBLOOM_MODEL` (public lane only).
+- Circle server: `APP_URL`, `BETTER_AUTH_SECRET`, optional `DB_PATH` and `PORT`, `TINFOIL_API_KEY`, `TINFOIL_MODEL`, optional `DARKBLOOM_API_KEY`/`DARKBLOOM_MODEL`, rate-limit settings in `server/.env.example`.
 - Memory: `MEMBRANE_ORIGIN`, `MEMBRANE_CONFIG_REPO`, `MEMBRANE_SWARM_SECRET`, `MEMBRANE_NAMESPACE` on the server. Sharing remains unavailable when unconfigured.
 
 Inference keys are server-side only and must not be container-management keys. Wrangler resource identifiers and domains are placeholders; use separate demo resources. No deployment is required to run the offline tests.

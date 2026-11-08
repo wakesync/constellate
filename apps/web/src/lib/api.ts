@@ -15,6 +15,7 @@ import type {
   ConstellationMember,
   JournalEntry,
   SkyToday,
+  PublicSky,
   SynastryReport,
   PlaceLookup,
   Astrocartography,
@@ -215,6 +216,18 @@ export const api = {
 
   async skyToday(): Promise<SkyToday> {
     return maybeMock(() => http<SkyToday>("/sky/today"), () => mock.skyToday());
+  },
+
+  // Public lane. Sent without credentials: nothing about you is needed or sent.
+  async publicSky(): Promise<PublicSky> {
+    return maybeMock(
+      async () => {
+        const res = await fetch(API_BASE + "/public/sky/today", { credentials: "omit" });
+        if (!res.ok) throw new ApiError(res.status, "UNKNOWN", res.statusText);
+        return ((await res.json()) as { transits: PublicSky }).transits;
+      },
+      () => mock.publicSky(),
+    );
   },
 
   async constellations(): Promise<Constellation[]> {
