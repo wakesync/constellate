@@ -9,7 +9,7 @@
 // The socion draws its elements as symbol pairs (a filled/empty circle, triangle,
 // or square). We render a simple, legible glyph per element rather than the exact
 // esoteric symbols, so the diagram reads on a phone: a shape whose fill encodes
-// extroverted (solid) vs introverted (open), and whose form encodes the Jungian
+// extroverted (solid) vs introverted (open), and whose form encodes the typological
 // function family. Ego cells are drawn strong; Super-Id softer; Id quietest.
 
 import type { ModelAPosition, SocionicsElement } from "../lib/types";

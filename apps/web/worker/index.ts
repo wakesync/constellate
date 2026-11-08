@@ -4,6 +4,8 @@
 
 export interface Env {
   ASSETS: Fetcher;
+  // Bind only an isolated product API, never the live product by default.
+  PRODUCT_API?: Fetcher;
 }
 
 // Long-cache hashed build assets; never long-cache HTML or the service worker.
@@ -38,6 +40,12 @@ function withHeaders(req: Request, res: Response): Response {
 
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
+    const url = new URL(req.url);
+    if (url.pathname === "/product-api" || url.pathname.startsWith("/product-api/")) {
+      if (!env.PRODUCT_API) return Response.json({ error: "Product API not configured" }, { status: 503 });
+      url.pathname = url.pathname.slice("/product-api".length) || "/";
+      return env.PRODUCT_API.fetch(new Request(url, req));
+    }
     const res = await env.ASSETS.fetch(req);
     return withHeaders(req, res);
   },

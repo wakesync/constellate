@@ -80,7 +80,7 @@ def ayanamsa_deg(jd: float, mode: str = DEFAULT_AYANAMSA) -> float:
 # crystal" sub-structure).
 #
 # Order + starting offset verified against two independent sources:
-#   - bonniesorsby.com/human-design-gates-by-degree  (full by-degree table,
+#   - a published by-degree gate table  (full by-degree table,
 #     Gate 41 = 2 deg Aquarius, walked sign-by-sign to reconstruct the ring)
 #   - the widely published "Rave mandala" gate sequence (Jovian Archive lineage)
 # See docs/HUMAN-DESIGN.md for the full boundary cross-check.
@@ -224,7 +224,7 @@ def _activations(jd: float, ayanamsa_offset: float = 0.0) -> List[Dict[str, Any]
     ayanamsa_offset: degrees subtracted from every tropical longitude before
     gate mapping. 0.0 = tropical (canon). Non-zero = the sidereal lens: the
     same gate wheel applied to sidereal longitudes (community "sidereal HD"
-    practice; Ra Uru Hu's system is tropical-canon).
+    practice; the Human Design founder's system is tropical-canon).
     """
     lon_of: Dict[str, float] = {}
     for name in ["Sun", "Moon", "Mercury", "Venus", "Mars", "Jupiter",
@@ -512,7 +512,7 @@ def compute_human_design(jd_birth: float, design_iso: str,
                          ayanamsa: str = DEFAULT_AYANAMSA) -> Dict[str, Any]:
     """Full BodyGraph derivation.
 
-    zodiac="tropical" (default, canon per Ra Uru Hu) leaves the output shape
+    zodiac="tropical" (default, canon per the Human Design founder) leaves the output shape
     exactly as before the sidereal feature. zodiac="sidereal" applies the same
     gate wheel to sidereal longitudes (tropical minus ayanamsa, each chart
     using the ayanamsa at its own instant) and marks the payload as the
@@ -579,7 +579,7 @@ def compute_human_design(jd_birth: float, design_iso: str,
         "defined_count": len(defined),
     }
     if zodiac == "sidereal":
-        # Alternate-lens framing: HD canon is tropical (Ra Uru Hu explicitly
+        # Alternate-lens framing: HD canon is tropical (the Human Design founder explicitly
         # rejected sidereal); this is the community-explored sidereal lens.
         out["zodiac"] = "sidereal"
         out["lens"] = "alternate"
@@ -596,7 +596,7 @@ def compute_human_design(jd_birth: float, design_iso: str,
 # GENE KEYS.
 #
 # Shadow / Gift / Siddhi triad for each of the 64 keys (= gates). Verified
-# against the published Gene Keys transmission (Richard Rudd). Source cited in
+# against the published Gene Keys transmission (the Gene Keys author). Source cited in
 # docs/HUMAN-DESIGN.md. codon_ring is intentionally omitted where we could not
 # verify the full 21-ring mapping (see doc); we expose null rather than guess.
 # ---------------------------------------------------------------------------
@@ -722,7 +722,7 @@ def compute_gene_keys(hd_payload: Dict[str, Any]) -> Dict[str, Any]:
     }
     if hd_payload.get("zodiac") == "sidereal":
         # Propagate the alternate-lens framing: Gene Keys canon is tropical
-        # (Rudd correlates the hexagram wheel to the tropical zodiac).
+        # (the author correlates the hexagram wheel to the tropical zodiac).
         out["zodiac"] = "sidereal"
         out["lens"] = "alternate"
         out["canon"] = "tropical"

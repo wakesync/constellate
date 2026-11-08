@@ -272,7 +272,7 @@ export interface HumanDesign {
   open_centers: string[];
   defined_count: number;
   // Alternate-lens framing, present ONLY on sidereal payloads: HD canon is
-  // tropical (Ra Uru Hu built the wheel on the tropical zodiac); the sidereal
+  // tropical (the Human Design founder built the wheel on the tropical zodiac); the sidereal
   // reading is a community-explored alternate lens. Tropical payloads carry
   // none of these keys.
   zodiac?: "sidereal";
@@ -316,7 +316,7 @@ export interface GeneKeys {
   pearl?: Record<string, GkSphere>;
   keys: GkKey[];
   // Alternate-lens framing, sidereal payloads only (see HumanDesign note;
-  // Rudd correlates the hexagram wheel to the tropical zodiac).
+  // the author correlates the hexagram wheel to the tropical zodiac).
   zodiac?: "sidereal";
   lens?: "alternate";
   canon?: "tropical";

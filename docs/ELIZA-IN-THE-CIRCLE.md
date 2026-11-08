@@ -19,7 +19,7 @@ POST /constellations/:id/eliza  (membership required, rate limited)
   runTurn(env, scope, respondCtx, priorMessages)      apps/api/src/lib/eliza/agent.ts
         │
         ├── system prompt ......... apps/api/src/prompts/eliza-system.md (.ts mirror)
-        ├── tool-calling loop (OpenRouter, shared narrative endpoint)
+        ├── tool-calling loop (Tinfoil, shared productInference seam)
         │     ├── model requests tool calls
         │     ├── each tool runs through scope.ts ..... lib/eliza/scope.ts
         │     │     (access control here, NEVER in the prompt)
@@ -112,7 +112,7 @@ One message per turn, no running commentary, no triple-tap.
 
 ## Token / cost estimate per turn
 
-One LLM client (the shared OpenRouter endpoint, `claude-sonnet-4-5`). Per turn:
+One LLM client (the shared attested Tinfoil transport, configured with `TINFOIL_MODEL`). Per turn:
 system prompt + short history + up to `MAX_TOOL_CALLS` (6) round-trips, capped by
 `MAX_TURN_TOKENS` (~4k). A typical single-tool answer is 1–2 round-trips
 (~1.5–3k tokens). The killer question fans out to ~5 tools in one assistant turn,
@@ -127,11 +127,11 @@ cached in D1 so repeated questions do not recompute. Rate limiting is the same
 
 1. Apply migration `0008_eliza.sql` (`wrangler d1 migrations apply
    constellate-prod`).
-2. No new env vars: reuses `OPENROUTER_API_KEY`, `ASTRO_URL`, `ASTRO_BEARER`.
+2. Configure `TINFOIL_MODEL` and `TINFOIL_API_KEY`, `ASTRO_URL`, `ASTRO_BEARER`.
 3. `get_convergence` / `get_convergence_pair` degrade until lane 0007's
    `convergence_cache` + pair endpoint exist; no action needed to ship eliza
    first.
-4. If `OPENROUTER_API_KEY` is unset, `runTurn` returns a quiet in-voice fallback
+4. If `TINFOIL_API_KEY` is unset, `runTurn` returns a quiet in-voice fallback
    rather than failing.
 
 ## Files

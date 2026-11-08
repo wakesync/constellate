@@ -73,7 +73,7 @@ const POSITION_META: { position: number; role: string; block: Block; meaning: st
 ];
 
 // Given a base and creative element, derive the full 8-slot Model A stack.
-// The socion structure (Augusta's Model A) fixes the stack from the Ego block:
+// The socion structure (the canonical Model A) fixes the stack from the Ego block:
 //   1 base, 2 creative
 //   3 role       = same axis as creative, opposite i/e         -> "sister of creative"
 //   4 vulnerable = same axis as base, opposite i/e             -> "sister of base"
@@ -84,7 +84,7 @@ const POSITION_META: { position: number; role: string; block: Block; meaning: st
 // consistent construction: positions 5..8 are the dual-element mirror of 1..4,
 // and 3,4,7,8 come from the "opposite orientation" partners. See derivation below.
 function siblingOrientation(el: Element): Element {
-  // flip introversion/extroversion within the SAME Jungian dichotomy.
+  // flip introversion/extroversion within the SAME typological dichotomy.
   // Ne<->Ni, Se<->Si, Te<->Ti, Fe<->Fi
   const flip: Record<Element, Element> = {
     Ne: "Ni", Ni: "Ne",
@@ -104,7 +104,7 @@ export function buildModelA(base: Element, creative: Element): ModelAPosition[] 
   //   Super-Id  (5,6) = dual(base), dual(creative)        [valued, weak]
   //   Super-Ego (3,4) = flip(pos5), flip(pos6)            [unvalued, weak]
   //   Id        (7,8) = flip(base), flip(creative)        [unvalued, strong]
-  // where flip = same Jungian dichotomy, opposite introversion/extroversion,
+  // where flip = same typological dichotomy, opposite introversion/extroversion,
   // and dual = the completing element (Ne<->Si, Ni<->Se, Te<->Fi, Ti<->Fe).
   const p1 = base;
   const p2 = creative;

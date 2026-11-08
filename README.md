@@ -1,154 +1,92 @@
 # Constellate
 
-**An AI astrologer for you and your friends. Private by construction.**
+**An AI astrologer for you and your friends. Private inference, deliberate sharing.**
 
-Live at **https://constellate.me** · Demo: https://constellate-motion.pages.dev/constellate-motion-v2.mp4
+This repository combines the real Constellate product with the LOCALHOST confidential-compute additions. The public website is https://constellate.me; this branch is an isolated integration, not a statement that its changes are deployed there.
 
-Your birth chart is some of the most identifying data you own: the exact minute and place you were born. Every astrology app today ships it to a frontier API in plaintext. Constellate doesn't. Every reading, every chat and every memory your agent keeps lives inside attested confidential compute on an NVIDIA H200, and nothing leaves your circle without your explicit say.
+## Product
 
-Add your chart. Invite your circle. Get readings about your relationships, ask your personal agent anything about them, and let your agents compare notes, only through the summaries you approve.
+The default application is the full production React product: passkeys, natal charts, tropical and fixed-star skies, astrocartography, Human Design, Gene Keys, Enneagram, Socionics, deterministic convergence, journals, constellation graphs and versioned synastry readings. Swiss Ephemeris computes the astronomical evidence. Models write prose over computed facts, never calculate a chart.
 
-## What it does
+Every product reading and circle-agent model turn now enters **`productInference` in `apps/api/src/lib/inference.ts`**, which uses the same attested Tinfoil SDK transport as the hackathon server. There is no public-provider fallback. Inference failures yield marked, fixed non-AI copy while deterministic pages remain available.
 
-- **Real birth charts.** Tropical and sidereal (Lahiri) placements computed by an astronomy engine, not hallucinated by a model. Unknown birth times are marked as noon estimates.
-- **Circles.** Start a circle, share an invite code, watch your people appear as a constellation.
-- **Relationship readings.** "You + Sam: why you clash, and how to talk about it." Synastry between circle members, with romantic framing off unless both people opt in.
-- **A personal agent per member.** Every reading opens into a private conversation with your own agent. Only you can see it.
-- **Consented agent-to-agent exchange.** Your agent can share one exact summary you approved with a specific friend's agent. Revoke it any time and future access stops.
-- **More lenses.** Human Design, Gene Keys, Enneagram, Socionics and a convergence view in the full app under `apps/`.
-
-Astrology here is a reflection practice, not prediction, diagnosis or advice.
-
-## Built for LOCALHOST
-
-### Most production-ready product (2.1)
-Somebody outside the team can use this Monday, and they already have. Real accounts (Better Auth, secure HttpOnly sessions, exact-origin checks on every mutation), persistent readings and chats, full account and profile deletion, per-user and global rate limits, and a public deploy at constellate.me. Two independent test users ran the full journey end to end: sign up, add chart, create circle, invite, reading, private chat. 57 offline tests ship with the server.
-
-### Private inference routing (2.3)
-Constellate routes every model call by **data sensitivity**, not by price:
-
-| Data | Route | Guarantee |
-| --- | --- | --- |
-| Birth details, placements, readings, chats, agent memory | Tinfoil enclave on H200 | Attested before the first byte is sent |
-| Public, non-personal copy (daily transits, sign overviews) | Darkbloom | Zero personal data in the prompt |
-| Chart math | Local astronomy engine | Never touches a model |
-
-The router minimizes before it sends: the model gets the placements a reading needs, never your raw birth date, time or city. Attestation is verified by the official `tinfoil` SDK on every client. **If attestation fails or the enclave is unreachable, the request fails. There is no fallback to a non-private model, ever.** A sensitive prompt can only ever exit through a verified enclave.
-
-**Threat model, stated plainly.** The enclave hides prompts and outputs from the inference provider and the host. The app server is the trust anchor for accounts and is minimal by design: provider keys never reach the browser, the database is permission-locked, deletes remove rows (backups age out on rotation), and placements are treated as sensitive even without a literal birth date, because they can narrow down when you were born. We name every boundary rather than say "encrypted" and stop there.
-
-### Own the model (2.2)
-Readings are a narrow, repeatable skill, so Constellate distills one. An open-weights teacher, licensed to permit distillation, writes readings over a large synthetic set of charts and relationship pairs (synthetic, so no real person's data is used). A small open student model is fine-tuned on that set and served inside the same H200 enclave. The result is a dedicated astrologer model that is cheaper, faster and fully ours, and is never sent to a third-party API.
-
-### Private cooperation (2.4)
-Each member's agent holds private context that no other member can see. Agents work together on circle-level readings ("your circle this week: Mars hits everyone's communication house"). Each agent contributes only what its owner approved, and every contribution is attributed to the member who made it. The circle board shows whose context moved the reading, so cooperation is measurable without anyone exposing their chart or chats.
-
-### Private swarm memory (2.5)
-Under the agents is **Membrane**: confidential, multiplayer agent memory running in its own Tinfoil enclave. Each member's memory is a separate namespace with signed per-user identity. Sharing is an explicit grant of one exact summary to one specific agent, and revoking it blocks future reads. Membrane speaks plain HTTP behind a small adapter (`server/src/membrane-remote.ts`), so any agent harness can plug into the same memory layer.
-
-### Tinfoil
-Both halves of the private stack run on Tinfoil: model inference on an H200 GPU enclave, and Membrane as a measured, attested Tinfoil Container with a public config repo. Every client verifies attestation before it talks to either one. That is the core design of the product, not an extra feature.
-
-### Darkbloom
-Darkbloom runs the public lane: transit forecasts, sign content and other copy with no personal data. That keeps enclave capacity for the private work, and the router guarantees birth data never takes this path.
-
-### Cognee
-Each circle builds a permissioned knowledge graph: members, approved summaries, recurring themes across readings. Agents learn from it across runs, so the second reading about you and Sam knows what the first one surfaced. Permissions follow the share grants, so a revoked summary disappears from what agents can use.
+Astrology and typology are interpretive reflection practices, not validated prediction, diagnosis or advice.
 
 ## Architecture
 
-```
-apps/web        React + Vite frontend (Tailwind, Framer Motion, react-query)
-                src/PreviewApp.tsx  circle-first app over the server below
-                src/App.tsx         full app (all lenses) over apps/api
-                worker/             Cloudflare Worker that serves the built SPA
-apps/api        Cloudflare Worker API for the full app (D1, passkeys, narratives)
-services/astro  Python (FastAPI) sidecar for charts, Human Design, astrocartography
-server          Node + Express backend for circles, readings and chat
-                src/server.ts       auth (Better Auth), profile, readings, deletion
-                src/circles.ts      circles, invites, membership, chat, share gates
-                src/inference.ts    attested Tinfoil reading and chat
-                src/chart.ts        Astronomy Engine placements
-                src/limits.ts       per-user and provider daily caps
-                ops/origin.ts       production entry behind a secret-gated proxy
-                ops/pages-worker.js Pages worker that forwards /api to the server
-                public/             minimal vanilla UI served by the server itself
-membrane       Python (FastAPI) confidential swarm memory, deployed as a Tinfoil Container
-                app/shares.py       exact share / read / revoke
-                app/router.py       sensitivity router (private | frontier slice | signer)
-                clients/            CLI, OpenAI tools, MCP adapters for any agent harness
-                tinfoil/            public tinfoil-config.yml (measured, attested)
-```
+- `apps/web`: full product UI by default (`App.tsx`). Explicit `VITE_APP_MODE=circles` builds the separate circle preview (`PreviewApp.tsx`).
+- `apps/api`: Hono Worker, D1, passkeys, scoped tools, chart and typology caches, relationship context, synastry generations.
+- `services/astro`: FastAPI, Swiss Ephemeris, dual-sky charts, exact solar-arc design solver and astrocartography.
+- `server`: separate Node/Express, Better Auth and SQLite circle backend. Attested readings, private chat, consented summary exchange and deletion.
+- `membrane`: confidential multiplayer memory service, exact share/read/revoke and experimental graph backend.
 
-The default web entry (`apps/web/src/main.tsx`) loads `PreviewApp`, which calls `/api/*` on the same origin. In production, a Cloudflare Pages worker forwards `/api` to the server with an origin secret. Locally, Vite proxies `/api` to the server.
+The two backends retain separate authentication and storage. No real accounts, readings, production databases or private infrastructure are imported. See [product core and inference contract](docs/PRODUCT-CORE.md), [private inference](docs/PRIVATE-INFERENCE.md), [circle API](docs/CIRCLES-API.md) and [design context](docs/DESIGN.md).
+
+## LOCALHOST capabilities and boundaries
+
+- **Product (2.1):** the production UI and deterministic engines, plus the isolated circle backend. Offline tests are not a claim of hosted availability.
+- **Owned model (2.2):** a dedicated model may be served on confidential infrastructure. Source configuration alone is not evidence of a trained or live model.
+- **Sensitivity routing (2.3):** all product requests are private, including personalized transit reflections. The private path is Tinfoil-only. Public-copy routing can be added separately but must never accept member data.
+- **Private cooperation (2.4):** the circle server lets independently authenticated members approve exact summaries, then runs two scoped agent turns. Revocation blocks future reads, not information already received.
+- **Memory (2.5):** Membrane provides signed identity, scoped namespaces and exact grants. Configuration and experimental graph code are not proof of an attested deployment.
+
+The application host and database can access plaintext birth data, readings and chats. Tinfoil attests the inference endpoint, not this application, its authentication or database. This is not end-to-end encryption. Missing attestation or configuration fails closed; generated prose cannot confer access permissions.
 
 ## Local setup
 
-Requires Node 24+ and npm. Python 3.11+ only if you run `services/astro`.
+Node 24+, npm, Python 3.11+. Install both JavaScript lockfiles because the Worker imports the server's existing inference transport rather than another copy:
 
 ```sh
-# server
-cd server
 npm ci
-cp .env.example .env              # fill in values, see table below
-export $(grep -v '^#' .env | xargs) # the server does not load .env itself
-APP_URL=http://localhost:5173 npm start
-npm test                          # offline tests, no network or keys needed
-
-# web, in another shell
-cd apps/web
-npm ci
-npm run dev                       # http://localhost:5173, /api proxied to :3400
+(cd server && npm ci)
+cp apps/api/.dev.vars.example apps/api/.dev.vars
+# Edit the isolated demo origins/bindings in apps/api/wrangler.toml.
+# Set RP_ID=localhost and APP_ORIGIN=http://localhost:5173 for local passkeys.
+(cd apps/api && npx wrangler d1 migrations apply constellate-demo --local)
+npm run dev:api
+# Another shell:
+npm run dev:web
 ```
 
-`APP_URL` must match the origin your browser uses, because mutating requests are rejected unless `Origin` equals `APP_URL`.
+Vite forwards `/product-api` to the local Worker on port 8787 and `/api` to the circle backend on port 3400. Neither defaults to the live product. For a built site, set `VITE_API_URL` to your isolated API origin or bind `PRODUCT_API` on the static Worker. Without the binding, same-origin product API requests return 503.
 
-For the full app (`apps/api` + `services/astro`): copy `apps/api/.dev.vars.example` to `.dev.vars`, fill in `apps/api/wrangler.toml` with your own Cloudflare account and D1 database, run migrations from `apps/api/migrations`, then `npm run dev:api`. Swap `apps/web/src/main.tsx` back to `App` and set `VITE_API_URL`.
+Run the sidecar with a shared `ASTRO_BEARER`:
 
-## Environment variables
+```sh
+python3 -m venv .venv
+.venv/bin/pip install -r services/astro/requirements.txt
+# Set ASTRO_BEARER in your environment, also in apps/api/.dev.vars.
+(cd services/astro && ../../.venv/bin/uvicorn main:app --host 127.0.0.1 --port 8000)
+```
 
-### server
+For the separate hackathon circle preview:
 
-| Variable | Required | Description |
-| --- | --- | --- |
-| `APP_URL` | yes | Exact public origin of the app. HTTPS in production. |
-| `PORT` | no | Listen port on 127.0.0.1. Default 3400. |
-| `DB_PATH` | no | SQLite file. Default `data/constellate.sqlite`. Keep it on a 0700 directory. |
-| `BETTER_AUTH_SECRET` | yes | Session secret, 32+ chars. `openssl rand -hex 32`. |
-| `TINFOIL_API_KEY` | for readings | Tinfoil inference key. Not a container admin key. |
-| `TINFOIL_MODEL` | for readings | A currently available Tinfoil chat model id. |
-| `READINGS_PER_USER_DAY` | no | Per-user daily reading cap. Default 5. |
-| `PROVIDER_DAILY_REQUEST_CAP` | no | Global daily inference cap. Default 100. |
-| `ORIGIN_PROXY_SECRET` | prod | Shared secret between the Pages worker and `ops/origin.ts`, 32+ chars. |
-| `TRUST_LOOPBACK_PROXY` | no | `1` to trust a loopback reverse proxy for client IP. |
-| `MEMBRANE_ORIGIN` | no | Membrane enclave origin. Sharing stays off unless set. |
-| `MEMBRANE_CONFIG_REPO` | no | GitHub repo the Membrane attestation is checked against. |
-| `MEMBRANE_SWARM_SECRET` | no | Membrane user-signing secret. |
-| `MEMBRANE_NAMESPACE` | no | Prefix for Membrane user ids. Default `cst`. |
+```sh
+# Configure server variables from server/.env.example in your shell.
+(cd server && APP_URL=http://localhost:5173 npm start)
+VITE_APP_MODE=circles npm run dev:web
+```
 
-### Pages worker (`server/ops/pages-worker.js`)
+## Configuration
 
-| Variable | Description |
-| --- | --- |
-| `APP_ORIGIN` | Public origin allowed to call `/api`. |
-| `API_UPSTREAM` | Origin of the running server. |
-| `ORIGIN_PROXY_SECRET` | Same value as on the server. |
+- Product: `DB`, passkey `RP_ID`/`RP_NAME`, `APP_ORIGIN`/`ALLOWED_ORIGINS`, `ASTRO_URL`, `ASTRO_BEARER`, `TINFOIL_API_KEY`, `TINFOIL_MODEL`.
+- Circle server: `APP_URL`, `BETTER_AUTH_SECRET`, optional `DB_PATH` and `PORT`, `TINFOIL_API_KEY`, `TINFOIL_MODEL`, rate-limit settings in `server/.env.example`.
+- Memory: `MEMBRANE_ORIGIN`, `MEMBRANE_CONFIG_REPO`, `MEMBRANE_SWARM_SECRET`, `MEMBRANE_NAMESPACE` on the server. Sharing remains unavailable when unconfigured.
 
-### apps/web
+Inference keys are server-side only and must not be container-management keys. Wrangler resource identifiers and domains are placeholders; use separate demo resources. No deployment is required to run the offline tests.
 
-| Variable | Description |
-| --- | --- |
-| `VITE_API_URL` | API base for the full app (`App.tsx`). |
-| `VITE_USE_MOCK` | `1` to use the in-browser mock backend for design work. |
-| `CONSTELLATE_SERVER_URL` | Dev proxy target for `/api`. Default `http://127.0.0.1:3400`. |
+## Offline verification
 
-### apps/api (full app)
+```sh
+npm run typecheck
+npm run build
+(cd server && npm test && npm run typecheck)
+for t in apps/api/test/*.test.ts; do server/node_modules/.bin/tsx "$t" || exit 1; done
+server/node_modules/.bin/tsx --tsconfig apps/web/tsconfig.json apps/web/test/zodiac-lens.test.tsx
+(cd apps/api && npx wrangler deploy --dry-run --outdir ../../artifacts/api)
+(cd services/astro && ../../.venv/bin/python test_hd.py && ../../.venv/bin/python test_acg.py)
+# With pytest installed:
+(cd services/astro && ../../.venv/bin/python -m pytest -q)
+```
 
-| Variable | Description |
-| --- | --- |
-| `ASTRO_URL`, `ASTRO_BEARER` | Astro sidecar URL and shared bearer. |
-| `OPENROUTER_API_KEY` | Narrative generation. Without it, readings fall back to non-AI text. |
-| `POOL_URL`, `POOL_API_KEY` | Optional Anthropic-compatible endpoint, preferred over OpenRouter when set. |
-| `RP_ID`, `RP_NAME`, `APP_ORIGIN`, `ALLOWED_ORIGINS` | Passkey and CORS settings. |
-
-## License
+Membrane has its own requirements and offline `shares_test.py`, `router_test.py` and `router_security_test.py` suites. Live inference and capability probes are opt-in and skipped by default. Builds and offline tests do not prove live attestation or provider/model availability.

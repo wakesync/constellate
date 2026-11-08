@@ -12,11 +12,11 @@ function ok(condition: boolean, message: string): void {
 const here = dirname(fileURLToPath(import.meta.url));
 const sample = readFileSync(join(here, "fixtures", "synastry-truncated-sample.txt"), "utf8");
 const normalized = normalizeSynastryNarrative(sample);
-ok(!normalized.trimStart().startsWith("{"), "prod fail-before fixture never crosses the API as raw JSON");
+ok(!normalized.trimStart().startsWith("{"), "synthetic truncated fixture never crosses the API as raw JSON");
 ok(normalized.includes("cast under the sidereal fixed-star sky"), "opening is preserved");
 ok(normalized.includes("*sharing a roof*"), "all complete editorial sections are preserved");
 ok(normalized.includes("*the shape of it*"), "complete verdict is preserved");
-ok(normalized.includes("ada's Venus trine bram's Moon:"), "complete highlights are preserved");
+ok(normalized.includes("synthetic aspect:"), "complete highlights are preserved");
 ok(!normalized.includes('"opening"') && !normalized.includes('"sections"'), "transport keys do not leak into prose");
 ok(!normalized.includes("small talk keeps"), "unfinished final highlight is omitted instead of displayed as a fragment");
 

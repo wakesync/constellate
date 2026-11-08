@@ -63,13 +63,13 @@ const HD_PAYLOAD = {
 
 // Natal payload INCLUDING the input block with birth data. The extraction must
 // project placements and let none of these strings survive into any row.
-const BIRTH_DATE = "2000-01-15";
-const BIRTH_TIME = "04:32";
-const BIRTH_LAT = 39.7392;
-const BIRTH_LNG = -104.9903;
+const BIRTH_DATE = "2001-01-01";
+const BIRTH_TIME = "12:00";
+const BIRTH_LAT = 12.3456;
+const BIRTH_LNG = -65.4321;
 const NATAL_PAYLOAD = {
   engine: "swiss-ephemeris (moshier)",
-  input: { date: BIRTH_DATE, time: BIRTH_TIME, lat: BIRTH_LAT, lng: BIRTH_LNG, tz: "America/Denver" },
+  input: { date: BIRTH_DATE, time: BIRTH_TIME, lat: BIRTH_LAT, lng: BIRTH_LNG, tz: "UTC" },
   ascendant: { sign: "Scorpio", sign_degree: 14.2, absolute_degree: 224.2 },
   planets: [
     { name: "Sun", sign: "Capricorn", sign_degree: 24.6, absolute_degree: 294.6, house: 3, retrograde: false },
@@ -152,7 +152,7 @@ const T = 1_753_000_000;
   ok(!all.includes(BIRTH_TIME), "birth time never appears in any edge");
   ok(!all.includes(String(BIRTH_LAT)), "birth latitude never appears in any edge");
   ok(!all.includes(String(BIRTH_LNG)), "birth longitude never appears in any edge");
-  ok(!all.includes("America/Denver"), "birth timezone never appears in any edge");
+  ok(!all.includes("UTC"), "birth timezone never appears in any edge");
 
   // The hash must be over the planets slice only, so two people born at
   // different places/times with identical placements produce identical hashes

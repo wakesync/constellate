@@ -4,9 +4,9 @@
 # Shared bearer token the API uses to call the astro sidecar.
 ASTRO_BEARER=dev-astro-bearer-change-me
 
-# OpenRouter key for narrative generation. If unset, the API gracefully degrades
-# to non-AI fallbacks (synastry + transit reflections still render).
-OPENROUTER_API_KEY=
+# Attested inference only. Missing keys yield marked non-AI fallback copy.
+TINFOIL_API_KEY=
+TINFOIL_MODEL=
 
 # Optional local overrides (defaults come from wrangler.toml [vars]):
 # RP_ID=localhost

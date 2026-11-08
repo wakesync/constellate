@@ -284,8 +284,8 @@ function LensReveal({
 export function AlternateLensNote({ system }: { system: "humandesign" | "genekeys" }) {
   const founder =
     system === "humandesign"
-      ? "ra uru hu built human design on the tropical zodiac and rejected sidereal outright"
-      : "richard rudd ties the gene keys' hexagram wheel to the tropical zodiac";
+      ? "the human design founder built human design on the tropical zodiac and rejected sidereal outright"
+      : "the gene keys author ties the gene keys' hexagram wheel to the tropical zodiac";
   return (
     <div
       className="mb-5 px-4 py-3 font-serif text-[0.92rem] leading-relaxed"

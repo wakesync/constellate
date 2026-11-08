@@ -1,7 +1,6 @@
 -- 0010_relationship_context.sql
 -- Relationship context (P1, de-romanticization). Synastry/convergence prose was
--- assuming a romantic lens for every pair; the convent circle is a CO-LIVING
--- house. The fix is structural: the relationship between two members is stored
+-- assuming a romantic lens for every pair; circles can be platonic households. The fix is structural: the relationship between two members is stored
 -- data on the canonical pair key, threaded through every pair-narrative prompt.
 -- Romantic framing becomes opt-in (pair context = romantic AND both members'
 -- preferences allow it), never assumed.
@@ -40,14 +39,3 @@ ALTER TABLE convergence_pair_cache ADD COLUMN narrative_lens TEXT;
 -- Synastry already stores prose, but needs the lens used to generate it so a
 -- context change invalidates framing without deleting the last good report.
 ALTER TABLE synastry_reports ADD COLUMN narrative_lens TEXT;
-
--- Existing convent members are known co-living housemates. Seed all six
--- canonical pairs from membership data rather than hard-coded user ids. This is
--- deliberately scoped to the production circle's exact name; other existing
--- pairs remain unspecified and therefore receive the safe platonic default.
-INSERT OR IGNORE INTO pair_context (user_a_id, user_b_id, relationship, set_by, updated_at)
-SELECT m1.user_id, m2.user_id, 'roommate', c.creator_id, unixepoch()
-FROM constellations c
-JOIN memberships m1 ON m1.constellation_id = c.id
-JOIN memberships m2 ON m2.constellation_id = c.id AND m1.user_id < m2.user_id
-WHERE lower(c.name) = 'the convent';

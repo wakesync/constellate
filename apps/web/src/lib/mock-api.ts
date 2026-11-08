@@ -39,15 +39,15 @@ const MOCK_USER: User = {
 };
 
 const MOCK_BIRTH: BirthData = {
-  date_local: "1993-08-14T03:22:00",
-  timezone: "America/Denver",
-  place_name: "Boulder, Colorado",
-  latitude: 40.015,
-  longitude: -105.27,
+  date_local: "2001-01-01T12:00:00",
+  timezone: "UTC",
+  place_name: "Synthetic equatorial point",
+  latitude: 0,
+  longitude: 0,
 };
 
 function mockNatal(seed = 0): NatalChart {
-  // Deterministic-ish placeholder positions. Real charts come from kerykeion.
+  // Invented fixture positions, not derived from a real person.
   const planets = [
     "Sun", "Moon", "Mercury", "Venus", "Mars",
     "Jupiter", "Saturn", "Uranus", "Neptune", "Pluto",
@@ -269,7 +269,7 @@ const MOCK_HD: HumanDesign = {
     label: "Right Angle Cross of the Sleeping Phoenix",
     gates: [55, 59, 9, 16],
   },
-  design_datetime_utc: "1993-05-17T14:08:00Z",
+  design_datetime_utc: "2000-10-01T12:00:00Z",
   centers: [
     { name: "Head", defined: false },
     { name: "Ajna", defined: false },

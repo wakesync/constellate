@@ -44,7 +44,7 @@ import type {
 // (SSR render tests), where import.meta.env is undefined.
 const ENV = (import.meta.env ?? {}) as Record<string, string | undefined>;
 
-const API_BASE = ENV.VITE_API_URL ?? "https://api.constellate.me";
+const API_BASE = ENV.VITE_API_URL ?? "/product-api";
 
 const USE_MOCK = ENV.VITE_USE_MOCK === "1";
 

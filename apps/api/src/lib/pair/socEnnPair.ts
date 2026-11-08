@@ -10,7 +10,7 @@
 //
 // ENNEAGRAM: there is no canonical, defensible "type X x type Y relationship
 // dynamics" table that is not vendor prose, so we refuse to fabricate one.
-// What IS canon (Riso-Hudson, The Wisdom of the Enneagram / Personality Types)
+// What IS canon (the published typology references, The Wisdom of the Enneagram / Personality Types)
 // and is a per-type fact we can compare mechanically:
 //   - centers:          Body 8,9,1 / Heart 2,3,4 / Head 5,6,7
 //   - harmonic groups (how a type copes when it does not get what it wants):

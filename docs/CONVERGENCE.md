@@ -444,7 +444,7 @@ pair; these are evidence sources, not features.
   Directional for Benefit and Supervision, read from A toward B.
 - **Enneagram**: raw pair facts only. Type, wing, and same/different on the
   three canonical groupings (centers 8-9-1/2-3-4/5-6-7; harmonic groups
-  1-3-5/2-7-9/4-6-8; hornevian groups 3-7-8/1-2-6/4-5-9, Riso-Hudson). There
+  1-3-5/2-7-9/4-6-8; hornevian groups 3-7-8/1-2-6/4-5-9, the published typology references). There
   is no defensible enneagram pair-dynamics table, so NO relationship label is
   derived and enneagram moves the harmony number by exactly zero.
 

@@ -56,7 +56,7 @@ ground truth. The remaining six positions are DERIVED by the canonical socion
 construction, so the stack cannot drift out of internal consistency:
 
 ```
-flip(x) = same Jungian dichotomy, opposite introversion/extroversion
+flip(x) = same typological dichotomy, opposite introversion/extroversion
           (Ne<->Ni, Se<->Si, Te<->Ti, Fe<->Fi)
 dual(x) = the completing element
           (Ne<->Si, Ni<->Se, Te<->Fi, Ti<->Fe)

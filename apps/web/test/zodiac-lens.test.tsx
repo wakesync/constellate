@@ -285,7 +285,7 @@ console.log("human design route, both skies");
   ];
   const sidereal = renderRoute(<HumanDesign />, seedS);
   ok(sidereal.includes("alternate lens"), "sidereal HD carries the alternate-lens note");
-  ok(sidereal.includes("ra uru hu") && sidereal.includes("tropical"), "note names the founder and the canon");
+  ok(sidereal.includes("the human design founder") && sidereal.includes("tropical"), "note names the founder and the canon");
   ok(sidereal.includes("lahiri"), "note names the ayanamsa lineage");
   ok(!/(merely|just a|not valid|wrong)/.test(sidereal), "framing is honest, not dismissive");
 }
@@ -308,7 +308,7 @@ console.log("gene keys route, both skies");
     [["genekeys", "reading"], { text: "a reading." }],
   ]);
   ok(sidereal.includes("alternate lens"), "sidereal GK carries the alternate-lens note");
-  ok(sidereal.includes("richard rudd"), "note names rudd's tropical stance");
+  ok(sidereal.includes("the gene keys author"), "note names the author's tropical stance");
 }
 
 // ---------------------------------------------------------------------------
