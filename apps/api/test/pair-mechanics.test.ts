@@ -255,11 +255,11 @@ console.log("digest: facts only, names attached, nothing invented");
     { human_design: hd([34]), socionics: { type: { code: "ILE" } }, gene_keys: null, enneagram: null, astro: null },
     { human_design: hd([57]), socionics: { type: { code: "LSI" } }, gene_keys: null, enneagram: null, astro: null },
   );
-  const d = mechanicsDigest(mech, "shadow", "jessica")!;
+  const d = mechanicsDigest(mech, "ada", "bram")!;
   ok(!!d.human_design_connection, "digest carries the connection block");
   ok(JSON.stringify(d).includes("34-57"), "digest names the actual channel");
   const soc = d.socionics_intertype as Record<string, unknown>;
-  ok(soc.relation === "Supervision" && String(soc.direction).includes("shadow is the supervisor"), "asymmetric direction attributed by name");
+  ok(soc.relation === "Supervision" && String(soc.direction).includes("ada is the supervisor"), "asymmetric direction attributed by name");
   ok(mechanicsDigest(buildPairMechanics({ astro: null, human_design: null, gene_keys: null, enneagram: null, socionics: null }, { astro: null, human_design: null, gene_keys: null, enneagram: null, socionics: null }), "a", "b") === null, "empty mechanics -> null digest");
 }
 

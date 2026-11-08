@@ -1,7 +1,7 @@
 // The PAIR LAYER: mechanical, deterministic pair facts from every engine that
 // can honestly produce them, assembled into one object.
 //
-// Product rule (Shadow, 2026-07-30): the engines are EVIDENCE SOURCES for one
+// Product rule: the engines are EVIDENCE SOURCES for one
 // reading per pair, not five separate features. This module is where their
 // pair-level facts are computed (pure functions, no LLM, no fetch) and where
 // they are folded into:

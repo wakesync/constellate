@@ -223,7 +223,7 @@ console.log("end-to-end: a birth-only person through the real mappers");
   ok(harmony!.confidence <= 1 && harmony!.confidence > 0, "confidence stays in range");
 
   // digest: nothing about quiz engines, no nagging.
-  const digest = mechanicsDigest(mech, "ana", "ben");
+  const digest = mechanicsDigest(mech, "teo", "mara");
   const digestStr = JSON.stringify(digest);
   ok(!digestStr.includes("socionics") && !digestStr.includes("enneagram"), "digest omits quiz engines entirely");
   ok(!/quiz|missing|absent|take the/.test(digestStr), "digest never nags about quizzes");
