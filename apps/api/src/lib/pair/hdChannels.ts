@@ -76,7 +76,7 @@ export const CHANNELS: Channel[] = [
 // sources (Gate 41 = 2 deg Aquarius, 5.625 deg per gate). The pair layer needs
 // it for ONE piece of geometry: the gate directly opposite on the wheel
 // (index + 32 mod 64), which is the Gene Keys "programming partner"
-// (Richard Rudd, Gene Keys: the programming partner of a key is its opposite
+// (the Gene Keys author, Gene Keys: the programming partner of a key is its opposite
 // hexagram across the wheel; e.g. 1 <-> 2, 4 <-> 49).
 // ---------------------------------------------------------------------------
 export const GATE_WHEEL: number[] = [

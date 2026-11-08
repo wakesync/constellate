@@ -18,7 +18,7 @@ Constellate already computes a small-world knowledge graph, it just stores it as
 JSON blobs. Every deterministic engine emits typed facts: gates, channels,
 centers, placements, aspects, intertype relations, convergence axes. The circle
 graph makes those facts queryable as one indexed structure, so Eliza can answer
-"who else in the circle has gate 34" or "what do oni and hex0x share" in one
+"who else in the circle has gate 34" or "what do ada and bram share" in one
 tool call instead of N payload fetches, and so she can weave proactively
 ("three of you carry the 20-34 channel, that is a house-level theme").
 
@@ -74,7 +74,7 @@ Phase 2+ predicates, same table, no schema change needed:
 | `intertype` | member → member, from socionics relationBetween |
 | `electromagnetic` | member → member, channel completed between two, from the get_hd_connection math |
 | `pair_axis` | member → member, from convergence_pair_cache when that lane lands |
-| `relationship_context` | member → member, from P1's pair context (roommate/collaborator/friend/romantic/family). This edge is what keeps proactive weaving platonic-by-default for the convent circle |
+| `relationship_context` | member → member, from P1's pair context (roommate/collaborator/friend/romantic/family). This edge is what keeps proactive weaving platonic-by-default for a shared household |
 | `journal_theme` | member → `theme:token`, **consent-gated, see below, not in phase 1 or 2** |
 
 Pair edges (`aspect`, and later `intertype`/`electromagnetic`/`pair_axis`) are
@@ -136,7 +136,7 @@ like every existing tool, access control in code, never in the prompt:
 - **`get_graph_neighborhood(member)`** — every edge whose subject (or pair
   object) is this member, grouped by predicate. Scope: member must resolve via
   `resolveMember` + `assertTargetReadable` in the active circle. This is her
-  one-call answer to "tell me about oni's wiring."
+  one-call answer to "tell me about ada's wiring."
 - **`get_shared_traits(a, b)`** — the intersection: trait objects both members
   have edges to (same gate, same defined center, same placement sign...), plus
   the pair edges between them (aspects, later intertype/electromagnetic). One
@@ -179,7 +179,7 @@ later without the consent architecture.
 ### Transport
 
 A **Discord gateway sidecar**, same operational pattern as the astro sidecar: a
-small Node process under systemd on the same host, holding the bot's gateway
+small managed Node process, holding the bot's gateway
 connection (passive listening requires a gateway; Workers-side interaction
 webhooks only get slash commands, which cannot do proactive weaving or
 should_respond over ambient conversation). The sidecar is deliberately thin: it
@@ -239,10 +239,10 @@ Anti-spam rules, enforced in code, in this order:
    how a member becomes a bot.
 5. **Relationship context gates the framing.** P1's pair context is an edge in
    the graph; proactive prose about a pair must pass through the same
-   de-romanticized framing rules. Convent default is co-living.
+   de-romanticized framing rules. Household framing is explicitly selected.
 6. **Journal themes never appear**, per the consent section above.
 
-Green for P2 overall stays what the charter says: Eliza live in the convent
+Green for P2 overall stays what the charter says: Eliza live in a consenting test
 groupchat, graph queryable, at least one real proactive weave that lands. The
 discipline above is what makes "lands" mean *welcome*, not tolerated.
 
@@ -254,7 +254,7 @@ discipline above is what makes "lands" mean *welcome*, not tolerated.
   in `apps/api/src/lib/graph/sync.ts`, unit tests in
   `apps/api/test/graph-extract.test.ts`. No routes, no Discord, no behavior
   change anywhere.
-- **Phase 2 (after Shadow reviews this doc):** graph tools + scope tests,
+- **Phase 2 (after product review):** graph tools + scope tests,
   rebuild hooks on the write paths of the source caches, Discord sidecar +
   link/bind flow + proactive gate, convergence/intertype/electromagnetic/
   relationship-context edges.

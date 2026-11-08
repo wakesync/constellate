@@ -73,7 +73,7 @@ Aries. Each divides into 4 padas of 3 deg 20'. Index is 1-based (1 = Ashwini).
 
 ## 5. Human Design / Gene Keys stance
 
-Per plan section 0: HD (Ra Uru Hu) and Gene Keys (Rudd) are **tropical-canon**;
+Per plan section 0: HD (the Human Design founder) and Gene Keys (the author) are **tropical-canon**;
 both founders explicitly tied their wheels to the tropical zodiac. Sidereal
 HD/GK is a community-explored **alternate lens** (Genetic Matrix et al). We
 ship both, honestly framed:

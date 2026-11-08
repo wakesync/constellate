@@ -312,7 +312,7 @@ def compute_aspects(planets_a: List[Dict], planets_b: List[Dict]) -> List[Dict]:
 #   ASC - curve where the planet is on the eastern horizon (rising)
 #   DSC - curve where the planet is on the western horizon (setting)
 #
-# Math (validated against astro.com ACG, see test_acg.py):
+# Math (validated against synthetic geometry, see test_acg.py):
 #   RA, Dec   from swe.calc_ut(jd, planet, FLG_MOSEPH | FLG_EQUATORIAL)
 #   GST(deg)  from swe.sidtime(jd) * 15
 #   MC line   lon = RA - GST           (IC = lon + 180)

@@ -1,7 +1,7 @@
 // Gene Keys PAIRING: deterministic wheel geometry between two activation
 // sequences. Thin and honest by design.
 //
-// What Gene Keys canon actually gives us for two people (Richard Rudd, the
+// What Gene Keys canon actually gives us for two people (the Gene Keys author, the
 // Gene Keys transmission; wheel geometry verified in hdChannels.ts):
 //
 //   1. PROGRAMMING PARTNERS. every key has exactly one programming partner:

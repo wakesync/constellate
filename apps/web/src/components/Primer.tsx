@@ -33,31 +33,31 @@ const PRIMERS: Record<PrimerKey, PrimerContent> = {
   astrocartography: {
     title: "astrocartography",
     what: "your natal chart projected onto the map of the earth. each planet draws lines across the globe where it would have been rising, setting, or overhead at your birth. places near a line are said to carry that planet's flavor for you.",
-    where: "the newest astrology here. formalized by jim lewis in the 1970s from older locational techniques. the geometry is exact; the interpretation is young and loose.",
+    where: "the newest astrology here. formalized in the 1970s from older locational techniques. the geometry is exact; the interpretation is young and loose.",
     how: "best treated as a lens for travel and relocation daydreams. if a city has always pulled at you or repelled you, see what runs through it. do not move for a line. notice, then decide like a person.",
   },
   humandesign: {
     title: "human design",
     what: "a synthesis system that assigns you a type (generator, projector, manifestor, reflector, manifesting generator), an authority (how decisions want to be made in you), and a body graph of defined and open centers. the core claim: you have a correct way of engaging with life, and friction comes from working against it.",
-    where: "channeled by ra uru hu in 1987 on ibiza, blending the i ching, kabbalah, chakras, and astrology. that is the honest provenance: one man's download, systematized. it is not ancient and not science.",
+    where: "channeled by the human design founder in 1987 on ibiza, blending the i ching, kabbalah, chakras, and astrology. that is the honest provenance: one man's download, systematized. it is not ancient and not science.",
     how: "hold it as an experiment, which is how the system itself says to hold it. try your strategy and authority for a while and watch what happens. many people find the type descriptions eerily accurate; that alone makes them worth a conversation.",
   },
   genekeys: {
     title: "gene keys",
     what: "64 archetypes, one per hexagram of the i ching, each described as a spectrum from shadow (the fear expression) through gift (the stable talent) to siddhi (the rare flowering). your birth moment picks out a small sequence of keys said to shape your life's work and purpose.",
-    where: "written by richard rudd, a student of the human design lineage, published 2009. it shares human design's math but trades the mechanics for contemplation. more poetry book than instrument panel.",
+    where: "written by the gene keys author, a student of the human design lineage, published 2009. it shares human design's math but trades the mechanics for contemplation. more poetry book than instrument panel.",
     how: "the shadow/gift pairs are the useful part: each names a fear pattern and the capacity hiding inside it. read yours slowly, notice which shadow made you flinch, and sit with that one. it is designed for contemplation, not diagnosis.",
   },
   enneagram: {
     title: "the enneagram",
     what: "nine basic patterns of motivation, what you most want, what you most fear, and the strategy you built around it. your type is not your behavior but the engine under it. wings, and lines of growth and stress, describe how the types lean into each other.",
-    where: "roots in mystical traditions via gurdjieff, drawn into its modern psychological form by oscar ichazo and claudio naranjo in the 1960s-70s, then spread through spiritual direction and therapy circles. the typology is unvalidated by research standards but widely used in inner work.",
+    where: "roots in mystical traditions, drawn into its modern psychological form in the 1960s-70s, then spread through spiritual direction and therapy circles. the typology is unvalidated by research standards but widely used in inner work.",
     how: "the only system here that runs on self-report, so it is only as honest as your answers. the type description should sting a little; if it just flatters you, look again. best used to catch your own strategy in the act.",
   },
   socionics: {
     title: "socionics",
     what: "sixteen types of information metabolism, how a mind takes in and prioritizes the world, described through eight functions arranged in model a. its distinctive claim is intertype relations: that specific pairs of types have predictable chemistry, including your dual, the type said to complete you.",
-    where: "built by aušra augustinavičiūtė in 1970s lithuania from jung's typology and antoni kępiński's information theory. a cousin of mbti but with sharper machinery and a social focus. big in the post-soviet world, niche in the west, unvalidated by mainstream psychology.",
+    where: "developed in 1970s lithuania from psychological typology and information theory. a cousin of mbti but with sharper machinery and a social focus. big in the post-soviet world, niche in the west, unvalidated by mainstream psychology.",
     how: "strongest as a language for friction: why some people effortlessly fill your gaps and others exhaust you for no visible reason. the relation readings between circle members are the point here. hold the labels loosely; watch the dynamics.",
   },
   convergence: {

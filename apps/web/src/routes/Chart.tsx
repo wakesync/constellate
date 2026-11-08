@@ -190,7 +190,7 @@ export default function Chart() {
 }
 
 function formatBirthLine(iso: string): string {
-  // iso like 1993-08-14T03:22:00. render lowercase serif date
+  // iso like 2001-01-01T12:00:00. render lowercase serif date
   try {
     const d = new Date(iso);
     if (Number.isNaN(d.getTime())) return iso;

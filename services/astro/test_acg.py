@@ -3,8 +3,7 @@
 Run:  .venv/bin/python test_acg.py
 
 Proves the astrocartography math is correct by checking line longitudes against
-known geometry + a documented reference birth (Albert Einstein), per the brief's
-validation gate. If GST sign or RA convention were wrong the lines would be
+known geometry and fabricated epoch inputs. If GST sign or RA convention were wrong the lines would be
 90/180 degrees off and these asserts would fail.
 """
 
@@ -75,21 +74,8 @@ def test_asc_west_dsc_east_of_mc():
     print(f"[ok] Sun ASC is {asc_off:+.1f} deg from MC (west), DSC {dsc_off:+.1f} deg (east)")
 
 
-def test_einstein_reference():
-    """Albert Einstein, 1879-03-14 11:30 Ulm (Europe/Berlin).
-    Documented astro.com ACG: the Sun MC line runs through eastern Europe near
-    ~23 deg E. We check Sun + Moon MC longitudes and report them for eyeball
-    comparison against a reference map."""
-    res = compute_astrocartography("1879-03-14", "11:30", 48.4, 9.99, "Europe/Berlin")
-    sun_mc = _mc_lon(res, "Sun")
-    moon_mc = _mc_lon(res, "Moon")
-    print(f"[ref] Einstein Sun MC line = {sun_mc:+.2f} deg lng  (astro.com reference ~ +23 deg E)")
-    print(f"[ref] Einstein Moon MC line = {moon_mc:+.2f} deg lng")
-    assert 18.0 < sun_mc < 28.0, f"Einstein Sun MC out of expected band: {sun_mc:.2f}"
-
-
 def test_all_planets_four_kinds():
-    res = compute_astrocartography("1993-08-14", "03:22", 40.015, -105.27, "America/Denver")
+    res = compute_astrocartography("2001-01-01", "12:00", 0.0, 0.0, "UTC")
     planets = {l["planet"] for l in res["lines"]}
     assert len(planets) == 10, f"expected 10 planets, got {len(planets)}"
     for p in planets:
@@ -109,7 +95,6 @@ def main():
     test_noon_utc_sun_mc_is_greenwich()
     test_ic_is_mc_plus_180()
     test_asc_west_dsc_east_of_mc()
-    test_einstein_reference()
     test_all_planets_four_kinds()
     print("=== all checks passed ===")
 

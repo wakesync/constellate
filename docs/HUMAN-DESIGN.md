@@ -22,12 +22,10 @@ before birth, bisect until `natal_sun_lon - design_sun_lon == 88.0 deg` to well 
 
 **Source:** the 88-degree solar arc is the canonical Design-date definition across the Jovian
 Archive lineage and every HD reference. Confirmed via web research (e.g. jovianarchive.com,
-puregenerators.com, christieinge.com "conscious vs unconscious"). The distinction from "88 days" is
+puregenerators.com, a published design-date reference "conscious vs unconscious"). The distinction from "88 days" is
 explicitly noted in those sources.
 
-**Verification (test_hd.py):** for the smoke birth 1999-12-25 14:30 Hyderabad, the solver returns a
-design moment **87.6803 days** before birth with a solar arc of **exactly 88.000000 deg** (error <
-0.0000 arcsec). This proves it is a true solar-arc solve, not a day count.
+**Verification:** the synthetic epoch test checks the 88-degree arc directly, not a fixed day count.
 
 ## 2. Planets — 13 per chart, 26 activations
 
@@ -51,14 +49,14 @@ absolute ecliptic longitude). Each gate spans 360/64 = **5.625 deg**; each of it
 a comment citing the sources.
 
 **Sources (two independent):**
-1. `bonniesorsby.com/human-design-gates-by-degree` — a full **by-degree table** giving every gate's
+1. `a published by-degree gate table` — a full **by-degree table** giving every gate's
    start/end degree. We fetched it and walked it sign by sign from 2 deg Aquarius forward to
    reconstruct the ring. Gate 41 = 2 deg Aquarius confirmed here.
 2. The widely published "Rave mandala" gate sequence (Jovian Archive lineage), cross-referenced from
-   multiple HD sites (christieinge.com, wholeandunleashed.com, ahumandesign.com).
+   multiple HD sites (a published design-date reference, wholeandunleashed.com, ahumandesign.com).
 
 **Note on a discrepancy we caught:** one AI-summarized sequence dropped six gates (1, 43, 14, 34, 9,
-5) in the Scorpio->Sagittarius stretch. We did NOT trust it. The bonniesorsby by-degree table is the
+5) in the Scorpio->Sagittarius stretch. We did NOT trust it. The published by-degree table is the
 authoritative source we reconstructed from, and it includes all 64. The `assert len == 64` and
 `assert unique` in hd.py guard against exactly this class of error, and both pass.
 
@@ -101,47 +99,18 @@ Built on the same gate/line activations. The Activation Sequence spheres:
   **Purpose** = design Earth.
 - Each key carries its **Shadow / Gift / Siddhi** triad (`hd.GENE_KEYS`, all 64).
 
-**Source:** the published Gene Keys transmission (Richard Rudd). The full 64-entry Shadow/Gift/Siddhi
+**Source:** the published Gene Keys transmission (the Gene Keys author). The full 64-entry Shadow/Gift/Siddhi
 table was taken from a published compilation (thesaturnway.com "unlocking the gene key archetypes")
-and encoded verbatim, with minor spelling normalized to Rudd's canonical terms where the compilation
+and encoded verbatim, with minor spelling normalized to the author's canonical terms where the compilation
 and the official transmission differ (British spellings, e.g. "Honour", "Valour").
 
 ---
 
-## Verification results
+## Verification
 
-Run: `cd services/astro && ./.venv/bin/python test_hd.py`
-
-**23/23 checks pass.** Two independently published public charts, both correct on every derived
-field:
-
-### Ra Uru Hu — founder of Human Design (April 9 1948, 00:05, Montreal / America/Toronto)
-Published: **Manifestor, 5/1, Splenic authority, Left Angle Cross of The Clarion (51/57 | 61/62)**.
-Derived: type=**Manifestor**, authority=**Splenic**, profile=**5/1**, definition=Single, cross
-gates=**[51, 57, 61, 62]**, angle=**Left Angle**. Match.
-(Our cross label prints gates as `(51/61 | 57/62)` = personality-sun/design-sun | personality-earth/
-design-earth grouping; the published "51/57 | 61/62" is the sun-pair/earth-pair grouping. Same four
-gates, different display grouping only. The `gates` array in the payload is the source of truth.)
-
-### Albert Einstein (March 14 1879, 11:30, Ulm / Europe/Berlin)
-Published: **Generator, Emotional authority, 1/4, Split definition, Right Angle Cross of Eden
-(36/6 | 11/12)**.
-Derived: type=**Generator**, authority=**Emotional**, profile=**1/4**, definition=**Split**, cross
-gates=**[36, 6, 11, 12]**. Match.
-
-### Mechanical checks
-- gate wheel: 64 unique entries, starts at gate 41, gate-41 midpoint maps to 41, degree just before
-  302 maps to gate 60 (wrap correct).
-- 36 canonical channels.
-- 88-degree solver: arc = exactly 88.000000 deg (err < 0.0000 arcsec), 87.68 days before birth
-  (correctly NOT 88 days).
-
-### Sidecar endpoint smoke (contract test birth 1999-12-25 14:30 Hyderabad)
-`/humandesign`, `/genekeys`, `/astro/design-time` all return well-formed payloads matching the
-contract shapes. type=Projector, authority=Emotional, profile=6/2, design datetime 1999-09-28
-16:40:20Z.
-
----
+Run `python test_hd.py` in `services/astro`. Uses only fabricated epoch inputs,
+checks the gate wheel, channel count, exact 88-degree solve and payload shape.
+Real-person reference charts are deliberately excluded from the public tree.
 
 ## What I could NOT verify (be loud about this)
 
@@ -167,52 +136,12 @@ contract shapes. type=Projector, authority=Emotional, profile=6/2, design dateti
    Instinctual subtype (sp/so/sx) is NOT measured, so `instinct` is always null.
 
 ### Sources
-- 88-degree design date: jovianarchive.com, puregenerators.com, christieinge.com (research 2026-07-25)
-- gate wheel order + 2 Aquarius offset: bonniesorsby.com/human-design-gates-by-degree (fetched),
-  cross-checked against christieinge.com / wholeandunleashed.com / ahumandesign.com
+- 88-degree design date: jovianarchive.com, puregenerators.com, a published design-date reference (research 2026-07-25)
+- gate wheel order + 2 Aquarius offset: a published by-degree gate table (fetched),
+  cross-checked against a published design-date reference / wholeandunleashed.com / ahumandesign.com
 - 36 channels + centers + type/authority rules: standard Human Design BodyGraph (Jovian Archive
-  lineage), verified via the Ra Uru Hu + Einstein known-chart derivations
-- Gene Keys Shadow/Gift/Siddhi: Richard Rudd's transmission, table via
+  lineage), checked using synthetic fixtures
+- Gene Keys Shadow/Gift/Siddhi: the Gene Keys author's transmission, table via
   thesaturnway.com/blog "unlocking the gene key archetypes"
-- known charts: Ra Uru Hu (jovianarchive.com, mybodygraph.com), Einstein
-  (flowwithhumandesign.com, geneticmatrix.com)
 
 ---
-
-## DEPLOY-NOTES (orchestrator runs these AFTER Shadow says go — DO NOT run them here)
-
-Nothing below was executed by this lane. No deploy, no remote migration, no service restart happened.
-
-1. **Apply migration 0005 to D1** (local first to sanity-check, then remote):
-   ```
-   cd apps/api
-   npx wrangler d1 migrations apply constellate-prod --local     # dry sanity
-   npx wrangler d1 migrations apply constellate-prod --remote     # production
-   ```
-   Note: a `0006_socionics.sql` from another lane also exists; `migrations apply` runs all pending in
-   order. Confirm both are intended before applying remote.
-
-2. **Restart the astro sidecar** (picks up hd.py + the new endpoints):
-   ```
-   sudo systemctl restart constellate-astro.service
-   systemctl status constellate-astro.service --no-pager
-   curl -s https://astro.constellate.me/healthz
-   ```
-   (hd.py imports cleanly and main.py registers /humandesign, /genekeys, /astro/design-time —
-   verified locally.)
-
-3. **Deploy the API worker:**
-   ```
-   cd apps/api
-   npx wrangler deploy
-   ```
-
-4. **Smoke test after deploy** (needs a logged-in session cookie):
-   ```
-   curl -s https://api.constellate.me/me/humandesign  --cookie "session=..."
-   curl -s https://api.constellate.me/me/genekeys      --cookie "session=..."
-   curl -s https://api.constellate.me/enneagram/questions --cookie "session=..."
-   ```
-
-Pre-deploy status: API `npm run typecheck` passes clean. Sidecar `test_hd.py` 23/23 pass.
-Migration 0005 applies cleanly in a 0001->0005 SQLite chain. No secrets committed.
